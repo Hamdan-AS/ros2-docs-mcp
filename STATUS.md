@@ -61,9 +61,13 @@
   - Humble, Jazzy, and Lyrical searches returned source-linked results.
 - Verified the complete live access lifecycle with isolated temporary records:
   - Missing and invalid keys returned `401`.
-  - A per-user two-request quota returned `429` on the third request.
+  - A per-user two-credit cap accepted the final credit, started a 48-hour
+    cooldown, then returned `429` with `reset_at` and `Retry-After`.
   - Revoked keys returned `401` and replacement keys worked.
   - Temporary users, keys, and usage rows were removed.
+- Applied the credit/cooldown Neon migration and deployed the Worker through
+  run `31901024384`; the automated post-deploy lifecycle passed in run
+  `31901673070`.
 - Added operator key issue/list/revoke/replace commands and idempotent migrations.
 - Added an hourly production health workflow and verified it successfully:
   - Run: `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31886448325`

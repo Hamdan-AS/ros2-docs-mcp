@@ -160,7 +160,8 @@ The expected package result is 21 packages for each of the three indexed distros
 ## GitHub deployment
 
 The `deploy-worker.yml` workflow can deploy relevant pushes to `main` and can be
-run manually. Add these repository secrets before using it:
+run manually. It tests, applies Neon migrations, deploys, and then verifies an
+isolated live credit lifecycle. Add these repository secrets before using it:
 
 - `CLOUDFLARE_API_TOKEN` — permissions to deploy Workers for this account.
 - `CLOUDFLARE_ACCOUNT_ID` — the target Cloudflare account ID.
