@@ -52,14 +52,15 @@ export default function PrivacyPage() {
             <ul>
               <li>
                 <strong>Access data:</strong> an operator-created customer label,
-                service tier, optional daily limit, a SHA-256 hash of the issued API
+                service tier, optional credit limit, a SHA-256 hash of the issued API
                 key, and key creation and last-used timestamps. Raw API keys are
                 displayed when issued or replaced and are not stored in the service
                 database.
               </li>
               <li>
-                <strong>Usage data:</strong> the customer record, UTC date, and
-                authenticated request count used to enforce daily quotas.
+                <strong>Usage data:</strong> the customer record, credits consumed,
+                cooldown end time, and historical daily request counts used to
+                enforce quotas and monitor the service.
               </li>
               <li>
                 <strong>Request content:</strong> search text, an optional ROS 2
@@ -104,11 +105,12 @@ export default function PrivacyPage() {
           <section>
             <h2>Retention and deletion</h2>
             <p>
-              Customer records and API-key hashes remain until access is revoked or
-              the record is deleted. Daily usage records are automatically deleted
-              after 90 days. Last-used timestamps remain with the customer record
-              for access administration. Temporary acceptance-test users, keys, and
-              usage rows are deleted after the test.
+              Customer records, API-key hashes, and current credit/cooldown state
+              remain until access is revoked or the record is deleted. Historical
+              daily usage records are automatically deleted after 90 days. Last-used
+              timestamps remain with the customer record for access administration.
+              Temporary acceptance-test users, keys, and usage rows are deleted
+              after the test.
             </p>
             <p>
               A customer may request access revocation or deletion by emailing

@@ -3,5 +3,5 @@ main = "src/worker.ts"
 compatibility_date = "2026-08-11"
 workers_dev = true
 
-# DATABASE_URL, RATE_LIMIT_DAILY, and ALLOWED_ORIGINS are Worker secrets.
+# DATABASE_URL, CREDIT_LIMIT, and ALLOWED_ORIGINS are Worker secrets.
 # Configure them with `wrangler secret put …`; never commit their values.

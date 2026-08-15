@@ -24,10 +24,12 @@
 - Added Neon HTTP database access compatible with the Workers runtime.
 - Added bearer API-key authentication.
 - API keys are stored only as SHA-256 hashes; raw keys are printed once during provisioning.
-- Added atomic, per-user daily usage tracking in Postgres.
+- Added atomic, per-user credit/cooldown tracking in Postgres. Historical daily
+  usage rows remain separate for 90-day operational retention.
 - Added a weekly automated cleanup and operator command for usage rows older
   than 90 days.
-- Configured the free allowance at 75 requests per UTC day.
+- Configured 75 credits per cycle; the 75th accepted request starts a 48-hour
+  cooldown and `429` responses include `reset_at` plus `Retry-After`.
 - Added browser-origin enforcement and CORS handling.
 - Added an unauthenticated `/health` endpoint.
 - Added automated tests for API-key parsing, hashing, quota reset, search validation, no-result formatting, and distribution filtering.
@@ -94,7 +96,7 @@
 
 - Confirm the Worker runtime secrets remain configured:
   - `DATABASE_URL`
-  - `RATE_LIMIT_DAILY=75`
+  - `CREDIT_LIMIT=75`
   - `ALLOWED_ORIGINS` only if a browser client needs direct access
 - Keep the automated 90-day retention cleanup and its failure reporting healthy.
 

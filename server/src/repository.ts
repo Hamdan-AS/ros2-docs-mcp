@@ -15,15 +15,18 @@ export interface AuthenticatedUser {
   id: number;
   tier: string;
   /** Optional operator override used for isolated quota tests or custom tiers. */
-  daily_limit: number | null;
+  credit_limit: number | null;
+}
+
+export interface CreditQuotaResult {
+  allowed: boolean;
+  credits_used: number;
+  cooldown_until: string | null;
 }
 
 export interface ApiAccessRepository {
   findUserByKeyHash(keyHash: string): Promise<AuthenticatedUser | undefined>;
   markKeyUsed(keyHash: string): Promise<void>;
-  /**
-   * Atomically consumes one request for this UTC date.  Undefined means the
-   * user had already reached the supplied limit.
-   */
-  consumeDailyQuota(userId: number, day: string, limit: number): Promise<number | undefined>;
+  /** Atomically consumes one credit or reports the active cooldown. */
+  consumeCredit(userId: number, limit: number): Promise<CreditQuotaResult>;
 }

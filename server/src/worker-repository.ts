@@ -3,6 +3,7 @@ import { neon } from "@neondatabase/serverless";
 import type {
   ApiAccessRepository,
   AuthenticatedUser,
+  CreditQuotaResult,
   DocSearchResult,
   DocsRepository,
 } from "./repository.js";
@@ -26,7 +27,7 @@ export class NeonHttpRepository implements DocsRepository, ApiAccessRepository {
 
   async findUserByKeyHash(keyHash: string): Promise<AuthenticatedUser | undefined> {
     const rows = await this.sql.query<false, false>(
-      `SELECT u.id, u.tier, u.daily_limit
+      `SELECT u.id, u.tier, u.credit_limit
          FROM api_keys k
          JOIN users u ON u.id = k.user_id
         WHERE k.key_hash = $1`,
@@ -39,16 +40,14 @@ export class NeonHttpRepository implements DocsRepository, ApiAccessRepository {
     await this.sql.query("UPDATE api_keys SET last_used_at = now() WHERE key_hash = $1", [keyHash]);
   }
 
-  async consumeDailyQuota(userId: number, day: string, limit: number): Promise<number | undefined> {
+  async consumeCredit(userId: number, limit: number): Promise<CreditQuotaResult> {
     const rows = await this.sql.query<false, false>(
-      `INSERT INTO api_daily_usage (user_id, usage_date, request_count)
-       VALUES ($1, $2::date, 1)
-       ON CONFLICT (user_id, usage_date)
-       DO UPDATE SET request_count = api_daily_usage.request_count + 1
-         WHERE api_daily_usage.request_count < $3
-       RETURNING request_count`,
-      [userId, day, limit]
-    ) as Array<{ request_count: number }>;
-    return rows[0]?.request_count;
+      `SELECT allowed, credits_used, cooldown_until
+         FROM consume_api_credit($1, $2)`,
+      [userId, limit]
+    ) as CreditQuotaResult[];
+    const result = rows[0];
+    if (!result) throw new Error("Quota function returned no result.");
+    return result;
   }
 }

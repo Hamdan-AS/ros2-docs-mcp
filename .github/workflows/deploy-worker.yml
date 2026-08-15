@@ -32,6 +32,11 @@ jobs:
       - name: Type-check Worker
         working-directory: server
         run: npm run check:worker
+      - name: Apply Neon migrations
+        working-directory: server
+        env:
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: npm run migrate
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:

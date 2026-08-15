@@ -21,7 +21,8 @@ test("server-renders the complete product page", async () => {
   assert.match(html, /Claude Code/);
   assert.match(html, /VS Code/);
   assert.match(html, /search_docs/);
-  assert.match(html, /75-request allowance/);
+  assert.match(html, /75 credits/);
+  assert.match(html, /48-hour cooldown/);
   assert.match(html, /Request a beta key/);
   assert.match(html, /href="\/privacy"/);
   assert.match(html, /href="mailto:qwerty_786@protonmail\.com">Support/);
@@ -38,11 +39,12 @@ test("server-renders the privacy policy and its data practices", async () => {
   assert.match(html, /Privacy policy/);
   assert.match(html, /Data we process/);
   assert.match(html, /authenticate access, enforce quotas, answer MCP/);
+  assert.match(html, /credits consumed/);
   assert.match(html, /Cloudflare hosts the landing site and MCP Worker/);
   assert.match(html, /Neon hosts the/);
   assert.match(html, /GitHub hosts the source repository/);
   assert.match(html, /Retention and deletion/);
-  assert.match(html, /Daily usage records are automatically deleted/);
+  assert.match(html, /Historical daily usage records are automatically deleted/);
   assert.match(html, /after 90 days/);
   assert.match(html, /href="mailto:qwerty_786@protonmail\.com"/);
   assert.match(html, /uses HTTPS, stores only API-key hashes/);

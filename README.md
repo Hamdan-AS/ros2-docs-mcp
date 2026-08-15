@@ -44,11 +44,11 @@ advertised by the public Worker.
 2. Create a Neon Postgres project. Use its **pooled** connection string for the
    Worker and its direct connection string for migrations and ingestion.
 
-3. Apply the base schema and idempotent Worker migration to Neon:
+3. Apply the base schema and idempotent migrations to Neon:
 
    ```bash
-   psql "$DATABASE_URL" -f db/schema.sql
-   psql "$DATABASE_URL" -f db/migrations/20260812_worker_rate_limits.sql
+   cd server
+   NEON_DATABASE_URL="$DATABASE_URL" npm run migrate
    ```
 
 4. Issue a bearer key from a trusted machine with the key-admin command. The raw
@@ -66,7 +66,7 @@ advertised by the public Worker.
    ```bash
    cd server
    npx wrangler secret put DATABASE_URL
-   npx wrangler secret put RATE_LIMIT_DAILY   # use 75
+   npx wrangler secret put CREDIT_LIMIT      # use 75
    npx wrangler secret put ALLOWED_ORIGINS    # e.g. https://app.example.com
    ```
 
@@ -81,8 +81,9 @@ advertised by the public Worker.
 
 `GET /health` is intentionally unauthenticated and returns a small status JSON.
 `/mcp` requires `Authorization: Bearer r2d_…`; every authenticated MCP request
-uses the per-user daily allowance (75 by default), atomically tracked in Neon.
-Missing/invalid keys return `401`, quota exhaustion returns `429`, and browser
+consumes one of the user's 75 credits. Credits do not expire on a schedule. The
+75th accepted request starts a 48-hour cooldown; requests during that cooldown
+return `429` with `reset_at`. Missing/invalid keys return `401`, and browser
 origins outside `ALLOWED_ORIGINS` return `403`.
 
 ## Connecting a generic MCP client
@@ -127,14 +128,14 @@ production smoke tests, refresh, deployment, rollback, and monitoring.
 
 Key issue, list, revoke, replacement, and per-user limit overrides are handled
 by `server/src/key_admin.ts` through the `key:*` npm scripts. Usage is counted
-atomically in Neon Postgres, so the allowance is shared across stateless Worker
+atomically in Neon Postgres, so the credit state is shared across stateless Worker
 instances rather than held in process memory. The `usage:cleanup` command and
-scheduled workflow remove daily usage records older than 90 days.
+scheduled workflow remove historical daily usage records older than 90 days.
 
 With a valid key, test the local Worker via the MCP Inspector or any Streamable
 HTTP client. Check tool discovery, `search_docs` for all three distros, and
 `get_distro_status`; also confirm no/malformed key gives `401` and a deliberately
-small `RATE_LIMIT_DAILY` gives `429`.
+small `CREDIT_LIMIT` gives `429` after its final credit is accepted.
 
 After applying the migration to Neon, verify the existing indexed package/distro
 coverage before deploying:
@@ -163,8 +164,9 @@ run manually. Add these repository secrets before using it:
 
 - `CLOUDFLARE_API_TOKEN` — permissions to deploy Workers for this account.
 - `CLOUDFLARE_ACCOUNT_ID` — the target Cloudflare account ID.
+- `NEON_DATABASE_URL` — direct Neon connection used for migrations before deploy.
 
-Worker runtime secrets (`DATABASE_URL`, `RATE_LIMIT_DAILY`, and
+Worker runtime secrets (`DATABASE_URL`, `CREDIT_LIMIT`, and
 `ALLOWED_ORIGINS`) are configured with Wrangler once and are not copied through
 GitHub Actions.
 
@@ -190,6 +192,7 @@ neither is required for the custom-connector beta.
 - Documentation ingestion fetches source repositories rather than bot-protected
   `docs.ros.org`. Distro scope is locked in `config/distros.yaml`.
 - API keys are SHA-256 hashes only. Do not log, persist, or echo raw tokens.
-- The free tier remains 75 requests/day. Tighten it only after daily requests
+- The free tier remains 75 credits followed by a 48-hour cooldown. Revisit it
+  only after daily requests
   exceed 5,000 for two consecutive weeks or monthly infra/database cost exceeds
   $15.

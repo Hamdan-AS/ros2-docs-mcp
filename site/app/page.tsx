@@ -36,7 +36,7 @@ export default function Home() {
       <section className="proof" aria-label="Service facts">
         <article><strong>2,234</strong><span>indexed chunks</span></article>
         <article><strong>63</strong><span>package/distro records</span></article>
-        <article><strong>75/day</strong><span>beta allowance</span></article>
+        <article><strong>75 credits</strong><span>then 48h cooldown</span></article>
         <article><strong>2 tools</strong><span>small, focused surface</span></article>
       </section>
 
@@ -112,7 +112,7 @@ export default function Home() {
         <div className="serviceGrid">
           <article><h3>401</h3><p>Your key is missing, invalid, or revoked.</p></article>
           <article><h3>403</h3><p>Your browser origin is not on the allow-list.</p></article>
-          <article><h3>429</h3><p>Your 75-request allowance is exhausted. It resets at UTC midnight.</p></article>
+          <article><h3>429</h3><p>Your 75 credits are exhausted. Use the returned reset time to retry after the 48-hour cooldown.</p></article>
           <article><h3>Privacy</h3><p>We retain request counts and errors, not search queries or raw API keys.</p></article>
         </div>
         <div className="statusBar">

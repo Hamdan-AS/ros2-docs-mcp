@@ -51,22 +51,24 @@ ros2-docs-mcp/
 ## MCP endpoints
 - stdio: `npm start` (in server/) — deliberately unlimited, local dev.
 - Worker HTTP: `https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp`, requires
-  `Authorization: Bearer <key>` (401 without/invalid), per-user 75/day (429 over).
+  `Authorization: Bearer <key>` (401 without/invalid), per-user 75 credits; the
+  final credit starts a 48-hour cooldown and subsequent requests return 429.
   `GET /health` is unauthenticated. Browser Origin headers must match the
   `ALLOWED_ORIGINS` Worker secret; server-to-server MCP clients need no Origin.
 
 ## Key administration & rate limiting
-- Issue key: `npm run key:issue -- <name> [tier] [daily-limit]` — token `r2d_...`
+- Issue key: `npm run key:issue -- <name> [tier] [credit-limit]` — token `r2d_...`
   printed ONCE; only the SHA-256 hash is stored (never the raw token).
 - Other administration commands: `npm run key:list -- [USER_ID]`,
   `npm run key:revoke -- KEY_ID`, `npm run key:replace -- KEY_ID`, and
-  `npm run key:set-limit -- USER_ID <daily-limit|default>`. Missing, invalid, or
+  `npm run key:set-limit -- USER_ID <credit-limit|default>`. Missing, invalid, or
   revoked keys return 401.
-- Daily limit: Worker secret `RATE_LIMIT_DAILY` (default 75). Budgets are atomic
-  per user across Worker instances, stored in `api_daily_usage` and reset by UTC
-  date. Tightening trigger locked:
+- Credit limit: Worker secret `CREDIT_LIMIT` (default 75). State is atomic per
+  user across Worker instances, stored in `api_quota_state`. Credits have no
+  scheduled expiry; consuming the last credit starts a 48-hour cooldown.
+  Tightening trigger locked:
   only if daily requests exceed 5,000 for 2 consecutive weeks OR monthly infra+DB
-  cost exceeds $15 (Phase 6; see README). 429 message is explicit (includes limit + reset).
+  cost exceeds $15 (Phase 6; see README). 429 includes `reset_at` and `Retry-After`.
 - Stdio path (index.ts) has NO auth/rate gate — intended.
 
 ## Database
@@ -77,8 +79,10 @@ ros2-docs-mcp/
 - Tables: `packages(id,name,distro,source_url, UNIQUE(name,distro))`;
   `doc_chunks(id,package_id→packages,distro,section_title,content,source_url,last_scraped_at)`
   with GIN index on `to_tsvector('english', section_title||' '||content)`;
-  `users(id,name,tier,created_at)`; `api_keys(id,user_id→users,key_hash UNIQUE,created_at,last_used_at)`;
-  `api_daily_usage(user_id,usage_date,request_count)` for atomic Worker quotas.
+  `users(id,name,tier,credit_limit,created_at)`;
+  `api_keys(id,user_id→users,key_hash UNIQUE,created_at,last_used_at)`;
+  `api_quota_state(user_id,credits_used,cooldown_until)` for atomic Worker quotas;
+  `api_daily_usage(user_id,usage_date,request_count)` is historical retention data.
 - Env that overrides local DB (ingest + db.ts): PGDATABASE/PGUSER/PGPASSWORD/PGHOST/PGPORT
   or ROS2DOCS_DATABASE_URL; ingest scripts also accept DATABASE_URL.
 

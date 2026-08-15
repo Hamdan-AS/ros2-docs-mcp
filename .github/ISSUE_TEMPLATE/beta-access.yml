@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Request one key per person. Never post an API key, database URL, or other secret in this issue. The project is a best-effort public beta with a 75-request daily allowance.
+        Request one key per person. Never post an API key, database URL, or other secret in this issue. The project is a best-effort public beta with 75 credits followed by a 48-hour cooldown after the final credit is consumed.
   - type: input
     id: use_case
     attributes:

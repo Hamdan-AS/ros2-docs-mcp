@@ -61,7 +61,7 @@ try {
 
   const issued = makeKey();
   const user = await pool.query(
-    "INSERT INTO users (name, tier, daily_limit) VALUES ($1, 'quota-test', 2) RETURNING id",
+    "INSERT INTO users (name, tier, credit_limit) VALUES ($1, 'quota-test', 2) RETURNING id",
     [testName]
   );
   userId = user.rows[0].id;
@@ -76,18 +76,23 @@ try {
   assert.equal(second.status, 200, `second allowed request returned ${second.status}`);
   const limited = await post(issued.token, 5, "tools/list");
   assert.equal(limited.status, 429, `over-limit request returned ${limited.status}`);
+  const limitedBody = await limited.json();
+  assert.match(limitedBody.error, /paused for 48 hours/);
+  assert.ok(Date.parse(limitedBody.reset_at), "429 response omitted a valid reset_at");
+  assert.ok(Number(limited.headers.get("retry-after")) > 0, "429 response omitted Retry-After");
 
   const usage = await pool.query(
-    "SELECT request_count FROM api_daily_usage WHERE user_id = $1 AND usage_date = CURRENT_DATE",
+    "SELECT credits_used, cooldown_until FROM api_quota_state WHERE user_id = $1",
     [userId]
   );
-  assert.equal(usage.rows[0]?.request_count, 2, "rejected request changed the quota counter");
+  assert.equal(usage.rows[0]?.credits_used, 2, "rejected request changed the credit counter");
+  assert.ok(usage.rows[0]?.cooldown_until, "final credit did not start cooldown");
 
   await pool.query("DELETE FROM api_keys WHERE id = $1", [key.rows[0].id]);
   const revoked = await post(issued.token, 6, "initialize", initializeParams());
   assert.equal(revoked.status, 401, `revoked key returned ${revoked.status}`);
 
-  await pool.query("DELETE FROM api_daily_usage WHERE user_id = $1", [userId]);
+  await pool.query("DELETE FROM api_quota_state WHERE user_id = $1", [userId]);
   const replacement = makeKey();
   await pool.query("INSERT INTO api_keys (user_id, key_hash) VALUES ($1, $2)", [userId, replacement.hash]);
   const replaced = await post(replacement.token, 7, "initialize", initializeParams());

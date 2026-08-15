@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS users (
     id         SERIAL PRIMARY KEY,
     name       TEXT NOT NULL,
     tier       TEXT NOT NULL DEFAULT 'free',
-    daily_limit INTEGER CHECK (daily_limit IS NULL OR daily_limit > 0),
+    credit_limit INTEGER CHECK (credit_limit IS NULL OR credit_limit > 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -44,10 +44,17 @@ CREATE TABLE IF NOT EXISTS api_keys (
     last_used_at TIMESTAMPTZ
 );
 
--- Shared, atomic per-user daily quotas for stateless Worker instances.
+-- Historical UTC-day request counts retained for 90-day operational reporting.
 CREATE TABLE IF NOT EXISTS api_daily_usage (
     user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     usage_date    DATE NOT NULL,
     request_count INTEGER NOT NULL DEFAULT 0 CHECK (request_count >= 0),
     PRIMARY KEY (user_id, usage_date)
+);
+
+-- Current credit/cooldown state. Rows are created lazily on the first request.
+CREATE TABLE IF NOT EXISTS api_quota_state (
+    user_id        INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    credits_used   INTEGER NOT NULL DEFAULT 0 CHECK (credits_used >= 0),
+    cooldown_until TIMESTAMPTZ
 );

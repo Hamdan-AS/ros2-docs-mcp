@@ -6,8 +6,9 @@ Endpoint:
 https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp
 ```
 
-Each beta user receives an individual `r2d_...` key with a 75-request daily
-allowance that resets at UTC midnight. Never commit or post the key publicly.
+Each beta user receives an individual `r2d_...` key with 75 credits. Credits do
+not expire on a schedule. Consuming the 75th credit starts a 48-hour cooldown.
+Never commit or post the key publicly.
 
 ## Officially supported clients
 
@@ -85,7 +86,8 @@ npx @modelcontextprotocol/inspector --cli \
 
 - `401`: key missing, invalid, or revoked.
 - `403`: browser origin not allow-listed.
-- `429`: daily allowance exhausted; retry after UTC midnight.
+- `429`: all credits were consumed and the 48-hour cooldown is active; use the
+  response's `reset_at` timestamp or `Retry-After` header before retrying.
 - `500` or `503`: service failure; retry later and report the failure time.
 
 To request beta access, use the

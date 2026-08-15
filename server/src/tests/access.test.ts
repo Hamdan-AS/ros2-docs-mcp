@@ -4,14 +4,15 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { z } from "zod";
 
-import { bearerToken, consumeQuota, effectiveDailyLimit, hashApiKey, utcDay } from "../access.js";
+import { bearerToken, consumeQuota, effectiveCreditLimit, hashApiKey } from "../access.js";
 import { buildServer, formatSearchResults, searchDocsInputSchema } from "../mcp.js";
 import type { ApiAccessRepository } from "../repository.js";
 import { buildDocsSearchQuery } from "../search-query.js";
 import type { DocsRepository } from "../repository.js";
 
 class FakeAccessRepository implements ApiAccessRepository {
-  private readonly usage = new Map<string, number>();
+  private readonly usage = new Map<number, { credits: number; cooldownUntil: number | null }>();
+  now = new Date("2026-08-12T12:00:00.000Z");
 
   async findUserByKeyHash() {
     return undefined;
@@ -19,12 +20,24 @@ class FakeAccessRepository implements ApiAccessRepository {
 
   async markKeyUsed() {}
 
-  async consumeDailyQuota(userId: number, day: string, limit: number) {
-    const key = `${userId}:${day}`;
-    const count = this.usage.get(key) ?? 0;
-    if (count >= limit) return undefined;
-    this.usage.set(key, count + 1);
-    return count + 1;
+  async consumeCredit(userId: number, limit: number) {
+    let state = this.usage.get(userId) ?? { credits: 0, cooldownUntil: null };
+    if (state.cooldownUntil !== null && state.cooldownUntil > this.now.getTime()) {
+      return {
+        allowed: false,
+        credits_used: state.credits,
+        cooldown_until: new Date(state.cooldownUntil).toISOString(),
+      };
+    }
+    if (state.cooldownUntil !== null) state = { credits: 0, cooldownUntil: null };
+    state.credits += 1;
+    if (state.credits === limit) state.cooldownUntil = this.now.getTime() + 48 * 60 * 60 * 1000;
+    this.usage.set(userId, state);
+    return {
+      allowed: true,
+      credits_used: state.credits,
+      cooldown_until: state.cooldownUntil === null ? null : new Date(state.cooldownUntil).toISOString(),
+    };
   }
 }
 
@@ -38,20 +51,27 @@ test("hashes API keys with SHA-256 and only accepts r2d bearer tokens", async ()
   assert.equal(bearerToken("Bearer not-a-project-key"), undefined);
 });
 
-test("quota increments atomically and resets by UTC date", async () => {
+test("final credit is accepted, then a 48-hour cooldown is enforced", async () => {
   const repository = new FakeAccessRepository();
-  const firstDay = new Date("2026-08-12T23:59:59.000Z");
-  assert.deepEqual(await consumeQuota(7, 2, repository, firstDay), { allowed: true, count: 1 });
-  assert.deepEqual(await consumeQuota(7, 2, repository, firstDay), { allowed: true, count: 2 });
-  assert.deepEqual(await consumeQuota(7, 2, repository, firstDay), { allowed: false });
-  assert.deepEqual(await consumeQuota(7, 2, repository, new Date("2026-08-13T00:00:00.000Z")), { allowed: true, count: 1 });
-  assert.equal(utcDay(firstDay), "2026-08-12");
+  assert.deepEqual(await consumeQuota(7, 2, repository), { allowed: true, credits_used: 1, cooldown_until: null });
+  assert.deepEqual(await consumeQuota(7, 2, repository), {
+    allowed: true,
+    credits_used: 2,
+    cooldown_until: "2026-08-14T12:00:00.000Z",
+  });
+  assert.deepEqual(await consumeQuota(7, 2, repository), {
+    allowed: false,
+    credits_used: 2,
+    cooldown_until: "2026-08-14T12:00:00.000Z",
+  });
+  repository.now = new Date("2026-08-14T12:00:00.000Z");
+  assert.deepEqual(await consumeQuota(7, 2, repository), { allowed: true, credits_used: 1, cooldown_until: null });
 });
 
 test("per-user quota overrides are isolated and validated", () => {
-  assert.equal(effectiveDailyLimit({ daily_limit: 2 }, 75), 2);
-  assert.equal(effectiveDailyLimit({ daily_limit: null }, 75), 75);
-  assert.equal(effectiveDailyLimit({ daily_limit: 0 }, 75), 75);
+  assert.equal(effectiveCreditLimit({ credit_limit: 2 }, 75), 2);
+  assert.equal(effectiveCreditLimit({ credit_limit: null }, 75), 75);
+  assert.equal(effectiveCreditLimit({ credit_limit: 0 }, 75), 75);
 });
 
 test("search input rejects invalid requests and reports no results clearly", () => {

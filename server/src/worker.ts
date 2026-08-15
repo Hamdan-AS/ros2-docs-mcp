@@ -1,11 +1,13 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 
-import { authenticateBearer, bearerToken, consumeQuota, effectiveDailyLimit } from "./access.js";
+import { authenticateBearer, bearerToken, consumeQuota, effectiveCreditLimit } from "./access.js";
 import { buildServer } from "./mcp.js";
 import { NeonHttpRepository } from "./worker-repository.js";
 
 export interface Env {
   DATABASE_URL: string;
+  CREDIT_LIMIT?: string;
+  /** Deprecated deployment alias retained during the credit-model rollout. */
   RATE_LIMIT_DAILY?: string;
   /** Comma-separated browser origins allowed to call /mcp. */
   ALLOWED_ORIGINS?: string;
@@ -18,9 +20,14 @@ function json(body: unknown, status = 200, headers: HeadersInit = {}): Response 
   return new Response(JSON.stringify(body), { status, headers: responseHeaders });
 }
 
-function dailyLimit(value: string | undefined): number {
+function creditLimit(value: string | undefined): number {
   const parsed = Number(value ?? 75);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : 75;
+}
+
+function retryAfterSeconds(resetAt: string): number {
+  const remaining = Math.ceil((new Date(resetAt).getTime() - Date.now()) / 1000);
+  return Math.max(1, remaining);
 }
 
 function allowedOrigins(env: Env): string[] {
@@ -78,13 +85,17 @@ async function handleMcp(request: Request, env: Env): Promise<Response> {
   const identity = await authenticateBearer(authorization, repository);
   if (!identity) return json({ error: "Unauthorized: missing or invalid API key." }, 401, corsHeaders(request, env));
 
-  const limit = effectiveDailyLimit(identity.user, dailyLimit(env.RATE_LIMIT_DAILY));
+  const limit = effectiveCreditLimit(identity.user, creditLimit(env.CREDIT_LIMIT ?? env.RATE_LIMIT_DAILY));
   const quota = await consumeQuota(identity.user.id, limit, repository);
   if (!quota.allowed) {
+    if (!quota.cooldown_until) throw new Error("Rejected quota result omitted cooldown_until.");
     return json(
-      { error: `Rate limit exceeded: ${limit} requests/day. Resets at UTC midnight.` },
+      {
+        error: `Credit limit reached. Access is paused for 48 hours after credit ${limit} was consumed.`,
+        reset_at: quota.cooldown_until,
+      },
       429,
-      corsHeaders(request, env)
+      { ...corsHeaders(request, env), "retry-after": String(retryAfterSeconds(quota.cooldown_until)) }
     );
   }
 

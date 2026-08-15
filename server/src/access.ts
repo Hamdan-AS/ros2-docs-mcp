@@ -1,4 +1,4 @@
-import type { ApiAccessRepository, AuthenticatedUser } from "./repository.js";
+import type { ApiAccessRepository, AuthenticatedUser, CreditQuotaResult } from "./repository.js";
 
 const encoder = new TextEncoder();
 
@@ -26,24 +26,18 @@ export async function authenticateBearer(
   return { user, keyHash };
 }
 
-export function utcDay(date = new Date()): string {
-  return date.toISOString().slice(0, 10);
-}
-
-export function effectiveDailyLimit(
-  user: Pick<AuthenticatedUser, "daily_limit">,
+export function effectiveCreditLimit(
+  user: Pick<AuthenticatedUser, "credit_limit">,
   defaultLimit: number
 ): number {
-  const override = user.daily_limit;
+  const override = user.credit_limit;
   return Number.isInteger(override) && (override ?? 0) > 0 ? override! : defaultLimit;
 }
 
 export async function consumeQuota(
   userId: number,
   limit: number,
-  repository: ApiAccessRepository,
-  date = new Date()
-): Promise<{ allowed: boolean; count?: number }> {
-  const count = await repository.consumeDailyQuota(userId, utcDay(date), limit);
-  return count === undefined ? { allowed: false } : { allowed: true, count };
+  repository: ApiAccessRepository
+): Promise<CreditQuotaResult> {
+  return repository.consumeCredit(userId, limit);
 }

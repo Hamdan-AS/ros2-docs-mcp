@@ -18,9 +18,14 @@ DATABASE_URL="$NEON_DATABASE_URL" npm run key:issue -- customer-name free
 DATABASE_URL="$NEON_DATABASE_URL" npm run key:list
 DATABASE_URL="$NEON_DATABASE_URL" npm run key:revoke -- KEY_ID
 DATABASE_URL="$NEON_DATABASE_URL" npm run key:replace -- KEY_ID
+DATABASE_URL="$NEON_DATABASE_URL" npm run key:set-limit -- USER_ID CREDIT_LIMIT
 ```
 
 Raw keys are shown once. Deliver them privately and never log or commit them.
+`key:list` reports each user's credit limit, credits used, and cooldown end. A
+limit of `default` removes the per-user override. Changing a key does not reset
+the user's quota state; delete that user's `api_quota_state` row only when an
+intentional operator reset is required.
 
 ## Usage retention
 
@@ -52,7 +57,9 @@ MCP_URL="https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp" \
 npm run test:lifecycle
 ```
 
-The lifecycle test uses a temporary two-request limit and deletes its test user.
+The lifecycle test uses a temporary two-credit limit, confirms the final credit
+starts a 48-hour cooldown, validates the `429` reset metadata, and deletes its
+test user.
 
 ## Refresh, deploy, and rollback
 
@@ -61,7 +68,9 @@ The lifecycle test uses a temporary two-request limit and deletes its test user.
   or manually run `deploy-worker` to deploy. Documentation-only and
   landing-site-only changes do not trigger a Worker deployment.
 - The deployment workflow runs the server tests and Worker type-check before
-  deploying. A failure in either check prevents deployment.
+  applying idempotent Neon migrations and deploying. A test, type-check, or
+  migration failure prevents deployment, so the Worker cannot start against an
+  older schema. The workflow requires the `NEON_DATABASE_URL` repository secret.
 - Roll back by reverting the faulty Git commit and pushing the revert.
 
 ## Monitoring

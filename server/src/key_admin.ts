@@ -16,15 +16,15 @@ function positiveInteger(value: string | undefined, label: string): number {
 }
 
 async function issue(name: string | undefined, tier = "free", limit?: string): Promise<void> {
-  if (!name) throw new Error("Usage: key:issue -- <customer-name> [tier] [daily-limit]");
-  const dailyLimit = limit === undefined ? null : positiveInteger(limit, "daily-limit");
+  if (!name) throw new Error("Usage: key:issue -- <customer-name> [tier] [credit-limit]");
+  const creditLimit = limit === undefined ? null : positiveInteger(limit, "credit-limit");
   const { token, hash } = newKey();
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     const user = await client.query<{ id: number }>(
-      "INSERT INTO users (name, tier, daily_limit) VALUES ($1, $2, $3) RETURNING id",
-      [name, tier, dailyLimit]
+      "INSERT INTO users (name, tier, credit_limit) VALUES ($1, $2, $3) RETURNING id",
+      [name, tier, creditLimit]
     );
     const key = await client.query<{ id: number }>(
       "INSERT INTO api_keys (user_id, key_hash) VALUES ($1, $2) RETURNING id",
@@ -80,13 +80,13 @@ async function replace(keyIdValue: string | undefined): Promise<void> {
 
 async function setLimit(userIdValue: string | undefined, limitValue: string | undefined): Promise<void> {
   const userId = positiveInteger(userIdValue, "user-id");
-  const dailyLimit = limitValue === "default" ? null : positiveInteger(limitValue, "daily-limit");
+  const creditLimit = limitValue === "default" ? null : positiveInteger(limitValue, "credit-limit");
   const result = await pool.query(
-    "UPDATE users SET daily_limit = $2 WHERE id = $1",
-    [userId, dailyLimit]
+    "UPDATE users SET credit_limit = $2 WHERE id = $1",
+    [userId, creditLimit]
   );
   if (result.rowCount !== 1) throw new Error(`User ${userId} was not found.`);
-  console.log(`User ${userId} daily limit set to ${dailyLimit ?? "the service default"}.`);
+  console.log(`User ${userId} credit limit set to ${creditLimit ?? "the service default"}.`);
 }
 
 async function list(userIdValue: string | undefined): Promise<void> {
@@ -97,9 +97,11 @@ async function list(userIdValue: string | undefined): Promise<void> {
     filter = "WHERE u.id = $1";
   }
   const result = await pool.query(
-    `SELECT u.id AS user_id, u.name, u.tier, u.daily_limit,
+    `SELECT u.id AS user_id, u.name, u.tier, u.credit_limit,
+            q.credits_used, q.cooldown_until,
             k.id AS key_id, k.created_at, k.last_used_at
        FROM users u
+       LEFT JOIN api_quota_state q ON q.user_id = u.id
        LEFT JOIN api_keys k ON k.user_id = u.id
        ${filter}
       ORDER BY u.id, k.id`,
