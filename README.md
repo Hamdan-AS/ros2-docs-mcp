@@ -95,8 +95,10 @@ connection is equivalent to:
 Never paste a bearer key into a public client configuration or commit it to a
 repository.
 
-See [`docs/CUSTOMER_SETUP.md`](docs/CUSTOMER_SETUP.md) for copy-paste VS Code
-and MCP Inspector instructions.
+See [`docs/CUSTOMER_SETUP.md`](docs/CUSTOMER_SETUP.md) for copy-paste Claude
+Code and VS Code instructions, plus MCP Inspector diagnostics. Beta users can
+request an individual key through the repository's **Beta access request** issue
+form; keys are delivered privately.
 
 ## Development and verification
 

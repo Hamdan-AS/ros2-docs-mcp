@@ -1,6 +1,6 @@
 # ROS2-Docs MCP — Project Status
 
-> Updated: 2026-08-12
+> Updated: 2026-08-15
 
 ## Achieved
 
@@ -43,35 +43,49 @@
   - Tool discovery returned `count_words`, `search_docs`, and `get_distro_status`.
   - A Jazzy `tf2` documentation search returned an indexed result and source URL.
 - Updated the project to Node.js 22+ and Wrangler 4.121.0.
+- Published the source at `https://github.com/Hamdan-AS/ros2-docs-mcp`.
+- Verified GitHub Actions deployment to Cloudflare Workers:
+  - Build, type-check, and deployment passed.
+  - Run: `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31885933764`
+- Verified the scheduled Neon refresh workflow:
+  - Dry run and real refresh passed.
+  - 63 package/distribution combinations and 2,234 chunks were written.
+  - Run: `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31883064860`
+- Verified the production endpoint with the official Streamable HTTP SDK client:
+  - Initialization and tool discovery passed.
+  - Only `search_docs` and `get_distro_status` were advertised.
+  - Humble, Jazzy, and Lyrical searches returned source-linked results.
+- Verified the complete live access lifecycle with isolated temporary records:
+  - Missing and invalid keys returned `401`.
+  - A per-user two-request quota returned `429` on the third request.
+  - Revoked keys returned `401` and replacement keys worked.
+  - Temporary users, keys, and usage rows were removed.
+- Added operator key issue/list/revoke/replace commands and idempotent migrations.
+- Added an hourly production health workflow and verified it successfully:
+  - Run: `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31886448325`
+- Added customer setup and operator runbooks in `docs/`.
+- Added customer landing-site source with setup instructions, service limits,
+  privacy wording, a health link, and a beta access path.
+- Locked customer clients to Claude Code and Visual Studio Code; MCP Inspector
+  remains the diagnostic client.
+- Added a structured GitHub beta-access request form that warns users not to
+  post secrets.
 
 ## Remaining
 
-### Immediate
+### Immediate launch work
 
-- Provision or retrieve a valid `r2d_...` API key for the production Neon database.
-- Run an authenticated MCP client test against the production Worker:
-  - Initialize the MCP connection.
-  - Discover the public tools.
-  - Call `get_distro_status`.
-  - Call `search_docs` for Humble, Jazzy, and Lyrical.
-  - Confirm the daily quota counter increments.
-- Confirm the production Worker returns `429` when tested with a deliberately small daily limit or a dedicated quota-test user.
-- Commit the completed Phase 8 source changes to Git.
-- Push the repository to a Git remote if public or automated deployment is intended.
+- Publish the validated customer landing site and record its production URL.
+- Select the operator email for provider alerts.
+- Run a small three-to-five-user beta and collect setup/search-quality feedback.
 
 ### Operations
 
-- Confirm the GitHub repository secrets are configured:
-  - `CLOUDFLARE_API_TOKEN`
-  - `CLOUDFLARE_ACCOUNT_ID`
-  - `NEON_DATABASE_URL`
 - Confirm the Worker runtime secrets remain configured:
   - `DATABASE_URL`
   - `RATE_LIMIT_DAILY=75`
   - `ALLOWED_ORIGINS` only if a browser client needs direct access
-- Run and verify the weekly Neon refresh workflow.
-- Add monitoring for Worker errors, request volume, Neon usage, and infrastructure cost.
-- Establish a key-revocation and replacement procedure.
+- Enable provider-level Cloudflare error and Neon cost alerts for the operator email.
 
 ### Phase 8A — Support
 
@@ -97,4 +111,4 @@
 
 ## Current Completion Boundary
 
-The production Worker is deployed and its public health and authentication gates are verified. The next required milestone is a successful authenticated tool discovery and documentation search against the live production endpoint.
+The MCP API is technically production-ready: deployment, ingestion, authenticated tools, all supported distros, quotas, revocation, replacement keys, and hourly health monitoring are verified. Customer-facing source and setup are also ready. Remaining launch work is publishing the landing URL, enabling provider email/cost alerts, and running the three-to-five-user beta.

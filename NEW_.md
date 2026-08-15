@@ -1,6 +1,6 @@
 # ROS2-Docs MCP Server — Checkpoint
 
-> Single checkpoint doc, aligned to repo state (2026-08-12).
+> Single checkpoint doc, aligned to repo state (2026-08-15).
 > `[x]` = completed / verified. `[ ]` = remaining.
 
 **Base layer:** ROS2 — Humble + Jazzy + Lyrical Luth (all currently-supported LTS)
@@ -21,9 +21,10 @@
 | 5 — Bulk ingest, 21 pkgs × 3 distros = 63 combos / 2,234 chunks | ✅ |
 | 6 — Rate limiting (in-memory) + hosted HTTP | ✅ |
 | 7 — Per-user accounts + per-key daily limits (HTTP edge) | ✅ |
-| 8 — Neon + Cloudflare Worker hosting | ✅ deployed; health and auth gate verified |
+| 8 — Neon + Cloudflare Worker hosting | ✅ production-verified |
 | 8A — Patreon support link | ⏳ remaining |
 | 8B — Paid gate | ⏳ remaining (only if trigger fires) |
+| 8C — Customer setup, access form, operator runbook, landing source | ✅ |
 | 9 — Launch, registry, launch post | ⏳ remaining |
 
 ---
@@ -38,7 +39,8 @@
 - **Phase 5:** `config/ingest_manifest.yaml` maps 21 priority packages to sources; `ingest/ingest_all.py` bulk-loads (idempotent delete+reinsert). Cross-checked vs rosdistro — all 21 exist in all 3 distros. `get_distro_status` serves REP 2000 data from `config/distros.yaml`. Weekly drift check: `.github/workflows/ingest-weekly.yml` (dry-run `check` + `refresh` against Neon).
 - **Phase 6:** in-memory per-user daily budget (`RATE_LIMIT_DAILY`, default 75), UTC-midnight date-check reset, no timers. Verified live e2e (2026-08-10) with 2 keys.
 - **Phase 7:** `users` + `api_keys` tables (SHA-256 key hashes); key provisioning `npm run create:key -- <name> [tier]` (`server/src/provision_key.ts`); HTTP auth always-on Bearer (401); 429 over budget; stdio unlimited by design.
-- **Phase 8:** schema + 63/2,234 moved to Neon; `server/src/db.ts` and ingest scripts read `DATABASE_URL` (SSL cloud / local defaults otherwise). The stateless Cloudflare Worker, Neon HTTP repository, atomic database-backed quotas, CORS/origin checks, tests, Wrangler config, and deploy workflow are implemented. Production is live at `https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp`; `/health` returned 200 and unauthenticated `/mcp` returned 401 on 2026-08-12.
+- **Phase 8:** schema + 63/2,234 moved to Neon; `server/src/db.ts` and ingest scripts read `DATABASE_URL` (SSL cloud / local defaults otherwise). Production is live at `https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp`. On 2026-08-15, GitHub deployment, weekly Neon refresh, authenticated SDK tool discovery, all three distro searches, per-user `429`, revoked-key `401`, replacement keys, and hourly health monitoring were verified.
+- **Phase 8C:** customer setup supports Claude Code and Visual Studio Code, MCP Inspector is documented for diagnostics, operator procedures are documented, and a beta access issue form plus landing-site source are present.
 
 ---
 
@@ -55,7 +57,8 @@
 
 ## Remaining (outstanding)
 
-- [ ] Smoke test from a real client against the live URL.
+- [x] Smoke test from the official SDK client against the live URL.
+- [x] Verify isolated quota, revocation, and replacement-key behavior.
 - [ ] 8A: Patreon support link (in-region billing rails unavailable; fallback: GitHub Sponsors via Open Source Collective fiscal host).
 - [ ] 8B: paid gate only if Phase 6 trigger fires (lower free limit → flat monthly sub → tier check in rate limiter).
 - [ ] 9: launch post on ROS Discourse, registry submissions, screen recording.

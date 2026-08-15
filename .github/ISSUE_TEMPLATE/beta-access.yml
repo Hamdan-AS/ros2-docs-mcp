@@ -1,0 +1,44 @@
+name: Beta access request
+description: Request an individual ROS2-Docs MCP beta key.
+title: "Beta access request: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request one key per person. Never post an API key, database URL, or other secret in this issue. The project is a best-effort public beta with a 75-request daily allowance.
+  - type: input
+    id: use_case
+    attributes:
+      label: ROS 2 use case
+      description: Briefly describe what you want to search or build.
+      placeholder: Navigation stack development on Jazzy
+    validations:
+      required: true
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options:
+        - Claude Code
+        - Visual Studio Code
+        - MCP Inspector (diagnostics)
+    validations:
+      required: true
+  - type: dropdown
+    id: distro
+    attributes:
+      label: Primary ROS 2 distribution
+      options:
+        - Humble
+        - Jazzy
+        - Lyrical
+        - More than one
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Beta terms
+      options:
+        - label: I understand this is a best-effort beta with no SLA, and the key must be delivered privately.
+          required: true
