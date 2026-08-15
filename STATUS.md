@@ -69,6 +69,14 @@
 - Added customer landing-site source with setup instructions, service limits,
   a dedicated privacy route, the 90-day retention policy, the public privacy
   and support contact, a health link, and a beta access path.
+- Migrated the customer site from the undeployed GPT Sites project to a
+  dedicated Cloudflare Worker and removed the Sites-specific build metadata.
+- Published and verified the customer site:
+  - Landing: `https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/`
+  - Privacy: `https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/privacy`
+  - Both routes return `200 OK` and contain the expected rendered content.
+  - Cloudflare site deployment run:
+    `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31896567228`
 - Locked customer clients to Claude Code and Visual Studio Code; MCP Inspector
   remains the diagnostic client.
 - Added a structured GitHub beta-access request form that warns users not to
@@ -78,8 +86,6 @@
 
 ### Immediate launch work
 
-- Publish the validated customer landing and privacy site, then record both
-  production URLs.
 - Send Cloudflare Worker error, GitHub Actions failure, and Neon usage/cost
   alerts to `qwerty_786@protonmail.com`, then verify available test notifications.
 - Run a small three-to-five-user beta and collect setup/search-quality feedback.
@@ -129,6 +135,6 @@
 The MCP API is technically production-ready for a custom-connector beta:
 deployment, ingestion, authenticated tools, all supported distros, Postgres-backed
 quotas, revocation, replacement keys, and hourly health monitoring are verified.
-Remaining beta work is publishing the landing and privacy URLs, verifying
-provider alerts, and completing the three-to-five-user trial. OAuth and official
+Remaining beta work is verifying provider alerts and completing the
+three-to-five-user trial. OAuth and official
 Claude Connectors Directory submission are explicitly deferred post-beta work.

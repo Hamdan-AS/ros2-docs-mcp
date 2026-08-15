@@ -11,6 +11,14 @@ The public endpoint is:
 https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp
 ```
 
+Customer setup, beta access, service status, and the public privacy policy are
+published at:
+
+```text
+https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/
+https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/privacy
+```
+
 It is compatible with MCP-capable clients that support Streamable HTTP and custom
 headers. That does **not** mean every chatbot product can connect directly; a
 client must implement MCP and allow an `Authorization` header.
@@ -159,6 +167,11 @@ run manually. Add these repository secrets before using it:
 Worker runtime secrets (`DATABASE_URL`, `RATE_LIMIT_DAILY`, and
 `ALLOWED_ORIGINS`) are configured with Wrangler once and are not copied through
 GitHub Actions.
+
+The customer site is also hosted on Cloudflare Workers. Changes under `site/**`
+run lint, rendered-content tests, and a production deployment through
+`deploy-site.yml`. The first verified site deployment is run
+[`31896567228`](https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31896567228).
 
 ## Release path
 

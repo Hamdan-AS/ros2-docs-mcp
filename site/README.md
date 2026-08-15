@@ -6,6 +6,8 @@ a dedicated privacy policy, and the live health link. It does not issue or
 store keys. Production runs as the `ros2-docs-mcp-site` Cloudflare Worker with
 bundled static assets.
 
+Production: `https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/`
+
 ## Prerequisites
 
 - Node.js `>=22.13.0`
