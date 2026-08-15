@@ -26,7 +26,7 @@ export class NeonHttpRepository implements DocsRepository, ApiAccessRepository {
 
   async findUserByKeyHash(keyHash: string): Promise<AuthenticatedUser | undefined> {
     const rows = await this.sql.query<false, false>(
-      `SELECT u.id, u.tier
+      `SELECT u.id, u.tier, u.daily_limit
          FROM api_keys k
          JOIN users u ON u.id = k.user_id
         WHERE k.key_hash = $1`,

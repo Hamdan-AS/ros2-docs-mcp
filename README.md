@@ -95,6 +95,9 @@ connection is equivalent to:
 Never paste a bearer key into a public client configuration or commit it to a
 repository.
 
+See [`docs/CUSTOMER_SETUP.md`](docs/CUSTOMER_SETUP.md) for copy-paste VS Code
+and MCP Inspector instructions.
+
 ## Development and verification
 
 Node.js 22 or newer is required by the pinned Wrangler toolchain.
@@ -108,6 +111,9 @@ npm run check:worker   # Cloudflare Worker type-check
 cp .dev.vars.example .dev.vars  # add a non-production Neon URL locally
 npm run dev:worker
 ```
+
+See [`docs/OPERATIONS.md`](docs/OPERATIONS.md) for migrations, key lifecycle,
+production smoke tests, refresh, deployment, rollback, and monitoring.
 
 With a valid key, test the local Worker via the MCP Inspector or any Streamable
 HTTP client. Check tool discovery, `search_docs` for all three distros, and

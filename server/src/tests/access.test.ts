@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { z } from "zod";
 
-import { bearerToken, consumeQuota, hashApiKey, utcDay } from "../access.js";
+import { bearerToken, consumeQuota, effectiveDailyLimit, hashApiKey, utcDay } from "../access.js";
 import { formatSearchResults, searchDocsInputSchema } from "../mcp.js";
 import type { ApiAccessRepository } from "../repository.js";
 import { buildDocsSearchQuery } from "../search-query.js";
@@ -43,6 +43,12 @@ test("quota increments atomically and resets by UTC date", async () => {
   assert.deepEqual(await consumeQuota(7, 2, repository, firstDay), { allowed: false });
   assert.deepEqual(await consumeQuota(7, 2, repository, new Date("2026-08-13T00:00:00.000Z")), { allowed: true, count: 1 });
   assert.equal(utcDay(firstDay), "2026-08-12");
+});
+
+test("per-user quota overrides are isolated and validated", () => {
+  assert.equal(effectiveDailyLimit({ daily_limit: 2 }, 75), 2);
+  assert.equal(effectiveDailyLimit({ daily_limit: null }, 75), 75);
+  assert.equal(effectiveDailyLimit({ daily_limit: 0 }, 75), 75);
 });
 
 test("search input rejects invalid requests and reports no results clearly", () => {

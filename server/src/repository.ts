@@ -14,6 +14,8 @@ export interface DocsRepository {
 export interface AuthenticatedUser {
   id: number;
   tier: string;
+  /** Optional operator override used for isolated quota tests or custom tiers. */
+  daily_limit: number | null;
 }
 
 export interface ApiAccessRepository {

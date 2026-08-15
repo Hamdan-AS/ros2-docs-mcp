@@ -30,6 +30,14 @@ export function utcDay(date = new Date()): string {
   return date.toISOString().slice(0, 10);
 }
 
+export function effectiveDailyLimit(
+  user: Pick<AuthenticatedUser, "daily_limit">,
+  defaultLimit: number
+): number {
+  const override = user.daily_limit;
+  return Number.isInteger(override) && (override ?? 0) > 0 ? override! : defaultLimit;
+}
+
 export async function consumeQuota(
   userId: number,
   limit: number,

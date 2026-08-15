@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS users (
     id         SERIAL PRIMARY KEY,
     name       TEXT NOT NULL,
     tier       TEXT NOT NULL DEFAULT 'free',
+    daily_limit INTEGER CHECK (daily_limit IS NULL OR daily_limit > 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

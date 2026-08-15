@@ -1,6 +1,6 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 
-import { authenticateBearer, bearerToken, consumeQuota } from "./access.js";
+import { authenticateBearer, bearerToken, consumeQuota, effectiveDailyLimit } from "./access.js";
 import { buildServer } from "./mcp.js";
 import { NeonHttpRepository } from "./worker-repository.js";
 
@@ -78,10 +78,11 @@ async function handleMcp(request: Request, env: Env): Promise<Response> {
   const identity = await authenticateBearer(authorization, repository);
   if (!identity) return json({ error: "Unauthorized: missing or invalid API key." }, 401, corsHeaders(request, env));
 
-  const quota = await consumeQuota(identity.user.id, dailyLimit(env.RATE_LIMIT_DAILY), repository);
+  const limit = effectiveDailyLimit(identity.user, dailyLimit(env.RATE_LIMIT_DAILY));
+  const quota = await consumeQuota(identity.user.id, limit, repository);
   if (!quota.allowed) {
     return json(
-      { error: `Rate limit exceeded: ${dailyLimit(env.RATE_LIMIT_DAILY)} requests/day. Resets at UTC midnight.` },
+      { error: `Rate limit exceeded: ${limit} requests/day. Resets at UTC midnight.` },
       429,
       corsHeaders(request, env)
     );
