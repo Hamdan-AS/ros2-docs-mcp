@@ -29,7 +29,7 @@ export function formatSearchResults(rows: DocSearchResult[]): string {
 export function buildServer(repository: DocsRepository, options: { includeDiagnostics?: boolean } = {}): McpServer {
   const server = new McpServer({
     name: "ros2-docs",
-    version: "0.2.0",
+    version: "0.3.0",
   });
 
   if (options.includeDiagnostics) {
@@ -46,9 +46,11 @@ export function buildServer(repository: DocsRepository, options: { includeDiagno
   server.registerTool(
     "search_docs",
     {
+      title: "Search ROS 2 documentation",
       description:
         "Full-text search over indexed ROS 2 documentation. Returns the most relevant sections with their source URLs.",
       inputSchema: searchDocsInputSchema,
+      annotations: { readOnlyHint: true },
     },
     async ({ query, distro, limit }) => {
       const lim = limit ?? 5;
@@ -62,9 +64,11 @@ export function buildServer(repository: DocsRepository, options: { includeDiagno
   server.registerTool(
     "get_distro_status",
     {
+      title: "Get ROS 2 distribution status",
       description:
         "Return lifecycle (release / EOL / LTS) status for ROS 2 distributions. EOL data from REP 2000 (see config/distros.yaml).",
       inputSchema: {},
+      annotations: { readOnlyHint: true },
     },
     async () => {
       const lines = DISTROS.map(

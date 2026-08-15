@@ -43,12 +43,12 @@ advertised by the public Worker.
    psql "$DATABASE_URL" -f db/migrations/20260812_worker_rate_limits.sql
    ```
 
-4. Provision a bearer key from a trusted machine. The raw token is printed once;
-   the database stores only its SHA-256 hash.
+4. Issue a bearer key from a trusted machine with the key-admin command. The raw
+   token is printed once; the database stores only its SHA-256 hash.
 
    ```bash
    cd server
-   DATABASE_URL='postgresql://…' npm run create:key -- my-client free
+   DATABASE_URL='postgresql://…' npm run key:issue -- my-client free
    ```
 
 5. Add Worker secrets. `ALLOWED_ORIGINS` is a comma-separated allow-list for
@@ -117,6 +117,12 @@ npm run dev:worker
 See [`docs/OPERATIONS.md`](docs/OPERATIONS.md) for migrations, key lifecycle,
 production smoke tests, refresh, deployment, rollback, and monitoring.
 
+Key issue, list, revoke, replacement, and per-user limit overrides are handled
+by `server/src/key_admin.ts` through the `key:*` npm scripts. Usage is counted
+atomically in Neon Postgres, so the allowance is shared across stateless Worker
+instances rather than held in process memory. The `usage:cleanup` command and
+scheduled workflow remove daily usage records older than 90 days.
+
 With a valid key, test the local Worker via the MCP Inspector or any Streamable
 HTTP client. Check tool discovery, `search_docs` for all three distros, and
 `get_distro_status`; also confirm no/malformed key gives `401` and a deliberately
@@ -144,8 +150,8 @@ The expected package result is 21 packages for each of the three indexed distros
 
 ## GitHub deployment
 
-The `deploy-worker.yml` workflow deploys on pushes to `main` and can be run
-manually. Add these repository secrets before using it:
+The `deploy-worker.yml` workflow can deploy relevant pushes to `main` and can be
+run manually. Add these repository secrets before using it:
 
 - `CLOUDFLARE_API_TOKEN` — permissions to deploy Workers for this account.
 - `CLOUDFLARE_ACCOUNT_ID` — the target Cloudflare account ID.
@@ -153,6 +159,18 @@ manually. Add these repository secrets before using it:
 Worker runtime secrets (`DATABASE_URL`, `RATE_LIMIT_DAILY`, and
 `ALLOWED_ORIGINS`) are configured with Wrangler once and are not copied through
 GitHub Actions.
+
+## Release path
+
+The current release target is a small, best-effort beta through manually added
+custom connectors. Each customer receives a separate, privately delivered and
+individually revocable bearer key. The customer site is informational only and
+does not issue, accept, or store credentials.
+
+An official Claude Connectors Directory submission is a separate post-beta
+milestone. It is intentionally deferred until the project has an OAuth 2.0
+authentication layer and access to a Team or Enterprise Claude organization;
+neither is required for the custom-connector beta.
 
 ## Notes for builders
 

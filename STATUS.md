@@ -25,6 +25,8 @@
 - Added bearer API-key authentication.
 - API keys are stored only as SHA-256 hashes; raw keys are printed once during provisioning.
 - Added atomic, per-user daily usage tracking in Postgres.
+- Added a weekly automated cleanup and operator command for usage rows older
+  than 90 days.
 - Configured the free allowance at 75 requests per UTC day.
 - Added browser-origin enforcement and CORS handling.
 - Added an unauthenticated `/health` endpoint.
@@ -65,7 +67,8 @@
   - Run: `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31886448325`
 - Added customer setup and operator runbooks in `docs/`.
 - Added customer landing-site source with setup instructions, service limits,
-  privacy wording, a health link, and a beta access path.
+  a dedicated privacy route, the 90-day retention policy, the public privacy
+  and support contact, a health link, and a beta access path.
 - Locked customer clients to Claude Code and Visual Studio Code; MCP Inspector
   remains the diagnostic client.
 - Added a structured GitHub beta-access request form that warns users not to
@@ -75,8 +78,10 @@
 
 ### Immediate launch work
 
-- Publish the validated customer landing site and record its production URL.
-- Select the operator email for provider alerts.
+- Publish the validated customer landing and privacy site, then record both
+  production URLs.
+- Send Cloudflare Worker error, GitHub Actions failure, and Neon usage/cost
+  alerts to `qwerty_786@protonmail.com`, then verify available test notifications.
 - Run a small three-to-five-user beta and collect setup/search-quality feedback.
 
 ### Operations
@@ -85,7 +90,7 @@
   - `DATABASE_URL`
   - `RATE_LIMIT_DAILY=75`
   - `ALLOWED_ORIGINS` only if a browser client needs direct access
-- Enable provider-level Cloudflare error and Neon cost alerts for the operator email.
+- Keep the automated 90-day retention cleanup and its failure reporting healthy.
 
 ### Phase 8A — Support
 
@@ -101,14 +106,29 @@
   - Monthly infrastructure and database cost exceeds $15.
 - If triggered, connect billing to the existing `users.tier` field and retain a useful free allowance.
 
-### Phase 9 — Launch
+### Phase 9 — Custom-connector launch
 
 - Prepare a short demonstration or screen recording.
 - Publish a launch post on ROS Discourse.
-- Submit the server to relevant MCP registries and directories.
+- Submit only to MCP registries or directories compatible with the current
+  individually issued bearer-key model.
 - Provide setup examples for popular MCP clients that support Streamable HTTP and custom authorization headers.
 - Collect search-quality feedback before considering embeddings or pgvector.
 
+### Post-beta — Official Claude Connectors Directory
+
+- Treat official directory submission as a separate milestone, not a blocker
+  for the custom-connector beta.
+- Add an OAuth 2.0 authentication layer before submission.
+- Obtain Team or Enterprise Claude organization access with permission to submit.
+- Prepare tool annotations, a reviewer account, example prompts, and listing
+  metadata only when the two structural requirements above are met.
+
 ## Current Completion Boundary
 
-The MCP API is technically production-ready: deployment, ingestion, authenticated tools, all supported distros, quotas, revocation, replacement keys, and hourly health monitoring are verified. Customer-facing source and setup are also ready. Remaining launch work is publishing the landing URL, enabling provider email/cost alerts, and running the three-to-five-user beta.
+The MCP API is technically production-ready for a custom-connector beta:
+deployment, ingestion, authenticated tools, all supported distros, Postgres-backed
+quotas, revocation, replacement keys, and hourly health monitoring are verified.
+Remaining beta work is publishing the landing and privacy URLs, verifying
+provider alerts, and completing the three-to-five-user trial. OAuth and official
+Claude Connectors Directory submission are explicitly deferred post-beta work.

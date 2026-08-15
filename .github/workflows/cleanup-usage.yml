@@ -1,0 +1,28 @@
+name: cleanup-usage
+
+on:
+  schedule:
+    - cron: "30 4 * * 1" # Mondays 04:30 UTC, after the weekly ingest starts.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - name: Install dependencies
+        working-directory: server
+        run: npm ci
+      - name: Delete usage rows older than 90 days
+        working-directory: server
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: npm run usage:cleanup

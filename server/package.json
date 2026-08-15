@@ -20,6 +20,7 @@
     "key:replace": "npm run build && node dist/key_admin.js replace",
     "key:set-limit": "npm run build && node dist/key_admin.js set-limit",
     "key:list": "npm run build && node dist/key_admin.js list",
+    "usage:cleanup": "npm run build && node dist/usage_cleanup.js",
     "migrate": "node scripts/apply-migrations.mjs",
     "smoke:public": "node scripts/smoke-public.mjs",
     "smoke:live": "node scripts/smoke-live.mjs",

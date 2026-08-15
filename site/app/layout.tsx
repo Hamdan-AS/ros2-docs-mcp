@@ -13,14 +13,14 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "ROS2-Docs MCP",
       description: "ROS 2 answers, grounded in the docs.",
-      images: [`${origin}/og.png`],
+      images: [`${origin}/og-v2.png`],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title: "ROS2-Docs MCP",
       description: "ROS 2 answers, grounded in the docs.",
-      images: [`${origin}/og.png`],
+      images: [`${origin}/og-v2.png`],
     },
   };
 }

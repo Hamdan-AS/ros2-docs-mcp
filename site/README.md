@@ -2,7 +2,8 @@
 
 The small public-beta landing and setup site for ROS2-Docs MCP. It contains
 product facts, supported-client configuration, beta access, service limits,
-privacy wording, and the live health link. It does not issue or store keys.
+a dedicated privacy policy, and the live health link. It does not issue or
+store keys.
 
 ## Prerequisites
 

@@ -1,5 +1,6 @@
 const endpoint = "https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp";
 const requestUrl = "https://github.com/Hamdan-AS/ros2-docs-mcp/issues/new?template=beta-access.yml";
+const supportEmail = "qwerty_786@protonmail.com";
 
 export default function Home() {
   return (
@@ -130,7 +131,11 @@ export default function Home() {
       <footer>
         <span>ROS2-Docs MCP</span>
         <p>Independent open-source project. ROS 2 is a trademark of Open Robotics.</p>
-        <div><a href="https://github.com/Hamdan-AS/ros2-docs-mcp">Source</a><a href={requestUrl}>Support</a></div>
+        <div>
+          <a href="https://github.com/Hamdan-AS/ros2-docs-mcp">Source</a>
+          <a href={`mailto:${supportEmail}`}>Support</a>
+          <a href="/privacy">Privacy</a>
+        </div>
       </footer>
     </main>
   );

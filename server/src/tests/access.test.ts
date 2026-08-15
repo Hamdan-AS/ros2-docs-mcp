@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { z } from "zod";
 
 import { bearerToken, consumeQuota, effectiveDailyLimit, hashApiKey, utcDay } from "../access.js";
-import { formatSearchResults, searchDocsInputSchema } from "../mcp.js";
+import { buildServer, formatSearchResults, searchDocsInputSchema } from "../mcp.js";
 import type { ApiAccessRepository } from "../repository.js";
 import { buildDocsSearchQuery } from "../search-query.js";
+import type { DocsRepository } from "../repository.js";
 
 class FakeAccessRepository implements ApiAccessRepository {
   private readonly usage = new Map<string, number>();
@@ -67,4 +70,32 @@ test("search query applies a distro filter only when requested", () => {
   const jazzy = buildDocsSearchQuery("tf2", "jazzy", 5);
   assert.deepEqual(jazzy.params, ["tf2", 5, "jazzy"]);
   assert.equal(jazzy.sql.includes("AND dc.distro = $3"), true);
+});
+
+test("server advertises version 0.3.0 and read-only titles for public tools", async () => {
+  const repository: DocsRepository = {
+    async searchDocs() {
+      return [];
+    },
+  };
+  const server = buildServer(repository);
+  const client = new Client({ name: "metadata-test", version: "1.0.0" });
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+
+  await server.connect(serverTransport);
+  await client.connect(clientTransport);
+  try {
+    assert.equal(client.getServerVersion()?.version, "0.3.0");
+    const { tools } = await client.listTools();
+    assert.deepEqual(
+      tools.map(({ name, title, annotations }) => ({ name, title, readOnlyHint: annotations?.readOnlyHint })),
+      [
+        { name: "search_docs", title: "Search ROS 2 documentation", readOnlyHint: true },
+        { name: "get_distro_status", title: "Get ROS 2 distribution status", readOnlyHint: true },
+      ]
+    );
+  } finally {
+    await client.close();
+    await server.close();
+  }
 });

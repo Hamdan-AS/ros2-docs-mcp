@@ -1,7 +1,7 @@
 <!-- Meta -->
 - Path: /home/elite/sandbox/ros2-docs-mcp/agents.md
 - Repo: ROS2-Docs MCP Server
-- Updated: 2026-08-12
+- Updated: 2026-08-15
 - Scope: all agents working inside this folder
 - Authoritative docs: README.md (product), checkpoint.md is replaced by NEW_.md (build roadmap/status), db/schema.sql, config/*.yaml
 
@@ -31,14 +31,14 @@ ros2-docs-mcp/
 │   ├── ingest_all.py         # bulk ingest, idempotent, [--dry-run] [--distro X]
 │   └── last_run_report.txt   # last real ingest: 63 pkgs×distro, 2,234 chunks
 └── server/                   # TypeScript (ESM, type: module), src/ → dist/
-    ├── package.json          # scripts: build, start, check:worker, deploy:worker, create:key
+    ├── package.json          # build/deploy, key:* administration, smoke/lifecycle scripts
     ├── src/index.ts          # stdio entry (unlimited, local dev)
     ├── src/worker.ts         # stateless Streamable HTTP Worker (/mcp, /health)
     ├── src/mcp.ts            # public tools: search_docs, get_distro_status
     ├── src/db.ts             # pg pool: DATABASE_URL (SSL) or ROS2DOCS_DB_* defaults
     ├── src/access.ts         # Bearer key → SHA-256 → users/api_keys lookup + quota service
     ├── src/worker-repository.ts # Neon HTTP search/auth/atomic quota implementation
-    ├── src/provision_key.ts  # npm run create:key -- <name> [tier] → prints key once
+    ├── src/key_admin.ts      # issue/list/revoke/replace/set-limit; raw keys print once
     └── src/distros.ts        # distro lifecycle data (keep in sync w/ distros.yaml)
 ```
 
@@ -55,9 +55,13 @@ ros2-docs-mcp/
   `GET /health` is unauthenticated. Browser Origin headers must match the
   `ALLOWED_ORIGINS` Worker secret; server-to-server MCP clients need no Origin.
 
-## Key provisioning & rate limiting
-- Create key: `npm run create:key -- <name> [tier]` — token `r2d_...` printed ONCE; only
-  the SHA-256 hash is stored (never the raw token). Missing/invalid key → 401.
+## Key administration & rate limiting
+- Issue key: `npm run key:issue -- <name> [tier] [daily-limit]` — token `r2d_...`
+  printed ONCE; only the SHA-256 hash is stored (never the raw token).
+- Other administration commands: `npm run key:list -- [USER_ID]`,
+  `npm run key:revoke -- KEY_ID`, `npm run key:replace -- KEY_ID`, and
+  `npm run key:set-limit -- USER_ID <daily-limit|default>`. Missing, invalid, or
+  revoked keys return 401.
 - Daily limit: Worker secret `RATE_LIMIT_DAILY` (default 75). Budgets are atomic
   per user across Worker instances, stored in `api_daily_usage` and reset by UTC
   date. Tightening trigger locked:
@@ -120,7 +124,10 @@ ros2-docs-mcp/
 - If a `v1/v2/copy/backup` variant appears, ask which is authoritative before editing.
 
 ## Remaining work (see NEW_.md for full checklist)
-- Smoke test the deployed Cloudflare Worker from a real MCP client with a valid key.
+- Deploy the customer landing site with its public privacy route and record the URL.
+- Enable Cloudflare and Neon provider alerts for the public operator contact.
+- Run a three-to-five-user custom-connector beta and observe it for one week.
 - Phase 8A support link (Patreon not available in-region; vetted fallback: GitHub Sponsors + fiscal host).
 - Phase 8B paid gate only if the locked trigger fires; tier flip hook (`users.tier`) already in place.
-- Phase 9 launch steps.
+- Phase 9 custom-connector launch steps. OAuth and official Claude Connectors
+  Directory submission are separate post-beta work.

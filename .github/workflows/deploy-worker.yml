@@ -3,6 +3,11 @@ name: deploy-worker
 on:
   push:
     branches: [main]
+    paths:
+      - "server/**"
+      - "db/**"
+      - "config/**"
+      - ".github/workflows/deploy-worker.yml"
   workflow_dispatch:
 
 permissions:
@@ -21,6 +26,9 @@ jobs:
       - name: Install dependencies
         working-directory: server
         run: npm ci
+      - name: Run server tests
+        working-directory: server
+        run: npm test
       - name: Type-check Worker
         working-directory: server
         run: npm run check:worker
