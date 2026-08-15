@@ -1,0 +1,130 @@
+# Phase 0 deliverable: ranked priority package list for v1 ingestion.
+# Locked to the roadmap v1 list, in roadmap order (2026-08-09):
+#   rclpy, rclcpp, rclcpp_lifecycle, rclcpp_components, rclcpp_action,
+#   tf2, tf2_ros, tf2_geometry_msgs, launch, launch_ros,
+#   message_filters, image_transport, cv_bridge,
+#   geometry_msgs, sensor_msgs, std_msgs, nav_msgs, action_msgs, rcl_interfaces,
+#   rviz2 — plus own driver: realsense2_camera (d435i).
+#
+# rank = absolute ingestion order. Category = grouping for scraper batching.
+
+packages:
+  # --- Core client libraries (top pain point: API docs discoverability) ---
+  - name: rclpy
+    rank: 1
+    category: core_client
+    notes: "Python client library; API docs 404 / not generated per community reports."
+
+  - name: rclcpp
+    rank: 2
+    category: core_client
+    notes: "C++ client library; Sphinx-style docs called 'unreadable' vs old Doxygen."
+
+  - name: rclcpp_lifecycle
+    rank: 3
+    category: core_client
+    notes: "Lifecycle node API."
+
+  - name: rclcpp_components
+    rank: 4
+    category: core_client
+    notes: "Composable nodes / component containers."
+
+  - name: rclcpp_action
+    rank: 5
+    category: core_client
+    notes: "Action server/client C++ API."
+
+  # --- tf2 ---
+  - name: tf2
+    rank: 6
+    category: tf2
+    notes: "Transform library core."
+
+  - name: tf2_ros
+    rank: 7
+    category: tf2
+    notes: "ROS integration (tf2_echo, tf2_monitor, view_frames)."
+
+  - name: tf2_geometry_msgs
+    rank: 8
+    category: tf2
+    notes: "Transform helpers for geometry_msgs types."
+
+  # --- Launch ---
+  - name: launch
+    rank: 9
+    category: launch
+    notes: "launch_ros API docs historically 404 (confirmed in Discourse)."
+
+  - name: launch_ros
+    rank: 10
+    category: launch
+    notes: "ROS 2 launch integration."
+
+  # --- ROS2-comm middleware ---
+  - name: message_filters
+    rank: 11
+    category: middleware
+    notes: "Time synchronizer / subscriber filters."
+
+  - name: image_transport
+    rank: 12
+    category: middleware
+    notes: "Image transport abstraction."
+
+  - name: cv_bridge
+    rank: 13
+    category: middleware
+    notes: "OpenCV <-> sensor_msgs bridge."
+
+  # --- Message types ---
+  - name: geometry_msgs
+    rank: 14
+    category: messages
+    notes: "Universal geometry message types."
+
+  - name: sensor_msgs
+    rank: 15
+    category: messages
+    notes: "Sensor message types (Image, PointCloud2, etc.)."
+
+  - name: std_msgs
+    rank: 16
+    category: messages
+    notes: "Basic message types."
+
+  - name: nav_msgs
+    rank: 17
+    category: messages
+    notes: "Navigation message types (Odometry, Path)."
+
+  - name: action_msgs
+    rank: 18
+    category: messages
+    notes: "Action goal/result types."
+
+  - name: rcl_interfaces
+    rank: 19
+    category: messages
+    notes: "Core interfaces for introspection."
+
+  # --- Tooling ---
+  - name: rviz2
+    rank: 20
+    category: tooling
+    notes: "Visualization tool."
+
+  # --- Sensor drivers (target-user personal use) ---
+  - name: realsense2_camera
+    rank: 21
+    category: drivers
+    notes: "Intel RealSense D435i driver — target user hardware."
+
+# Personal packages in the user's ros2_ws (d435i_kf_demo, lidar_pipeline_pkg,
+# rslidar_msg) are NOT public docs — out of ingestion scope; noted here only so
+# we remember the mapping if driver questions surface.
+personal_packages_out_of_scope:
+  - d435i_kf_demo
+  - lidar_pipeline_pkg
+  - rslidar_msg

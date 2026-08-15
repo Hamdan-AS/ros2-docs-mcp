@@ -1,0 +1,52 @@
+name: weekly-ingest-check
+
+# Phase 5/7 — weekly doc drift check + real refresh of the cloud DB.
+# Job 1 (dry-run): existence report, no DB writes — surfaces skipped docs.
+# Job 2 (refresh): runs the full ingest against the Neon DB so the hosted
+# service picks up doc drift. Requires the NEON_DATABASE_URL repo secret
+# (direct connection string).
+
+on:
+  schedule:
+    - cron: "0 4 * * 1" # Mondays 04:00 UTC
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: pip install pyyaml psycopg2-binary
+      - name: Dry-run ingest (existence report)
+        run: python ingest/ingest_all.py --dry-run | tee ingest/last_run_report.txt
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingest-report
+          path: ingest/last_run_report.txt
+          if-no-files-found: ignore
+
+  refresh:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: pip install pyyaml psycopg2-binary
+      - name: Refresh Neon DB (real ingest)
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: python ingest/ingest_all.py | tee ingest/refresh_report.txt
+      - name: Upload refresh report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingest-refresh-report
+          path: ingest/refresh_report.txt
+          if-no-files-found: ignore

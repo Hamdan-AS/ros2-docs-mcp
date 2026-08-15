@@ -1,0 +1,69 @@
+ingest report (DB refreshed)
+packages x distros processed: 63
+total doc chunks written: 2234
+
+package                distro   chunks  skipped
+--------------------------------------------------------------------------------
+action_msgs            humble        4  
+action_msgs            jazzy         4  
+action_msgs            lyrical       4  
+cv_bridge              humble        1  
+cv_bridge              jazzy         1  
+cv_bridge              lyrical       1  
+geometry_msgs          humble       33  
+geometry_msgs          jazzy        33  
+geometry_msgs          lyrical      32  
+image_transport        humble        1  
+image_transport        jazzy         1  
+image_transport        lyrical       1  
+launch                 humble       62  
+launch                 jazzy        63  
+launch                 lyrical      63  
+launch_ros             humble       60  
+launch_ros             jazzy        61  
+launch_ros             lyrical      61  
+message_filters        humble        1  
+message_filters        jazzy         1  
+message_filters        lyrical       1  
+nav_msgs               humble       10  
+nav_msgs               jazzy        12  
+nav_msgs               lyrical      12  
+rcl_interfaces         humble       17  
+rcl_interfaces         jazzy        21  
+rcl_interfaces         lyrical      21  
+rclcpp                 humble       64  
+rclcpp                 jazzy        64  
+rclcpp                 lyrical      67  
+rclcpp_action          humble       29  
+rclcpp_action          jazzy        30  
+rclcpp_action          lyrical      30  
+rclcpp_components      humble       44  
+rclcpp_components      jazzy        44  
+rclcpp_components      lyrical      44  
+rclcpp_lifecycle       humble        7  
+rclcpp_lifecycle       jazzy         7  
+rclcpp_lifecycle       lyrical       7  
+rclpy                  humble       70  
+rclpy                  jazzy        70  
+rclpy                  lyrical      73  
+realsense2_camera      humble        1  
+realsense2_camera      jazzy         1  
+realsense2_camera      lyrical       1  
+rviz2                  humble       31  
+rviz2                  jazzy        31  
+rviz2                  lyrical      31  
+sensor_msgs            humble       28  
+sensor_msgs            jazzy        28  
+sensor_msgs            lyrical      28  
+std_msgs               humble       30  
+std_msgs               jazzy        30  
+std_msgs               lyrical      30  
+tf2                    humble      163  
+tf2                    jazzy       163  
+tf2                    lyrical     163  
+tf2_geometry_msgs      humble       36  
+tf2_geometry_msgs      jazzy        36  
+tf2_geometry_msgs      lyrical      36  
+tf2_ros                humble       45  
+tf2_ros                jazzy        45  
+tf2_ros                lyrical      45  

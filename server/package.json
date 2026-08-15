@@ -1,0 +1,34 @@
+{
+  "name": "ros2-docs-mcp-server",
+  "version": "0.3.0",
+  "description": "MCP server answering ROS 2 documentation questions (stdio + Cloudflare Worker HTTP).",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "check:worker": "tsc -p tsconfig.worker.json",
+    "build:worker": "npm run check:worker && wrangler deploy --dry-run",
+    "dev:worker": "wrangler dev",
+    "deploy:worker": "wrangler deploy",
+    "start": "node dist/index.js",
+    "create:key": "npm run build && node dist/provision_key.js",
+    "test": "npm run build && node --test dist/tests/*.test.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@neondatabase/serverless": "^1.1.0",
+    "pg": "^8.23.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260812.1",
+    "@types/node": "^26.2.0",
+    "@types/pg": "^8.21.0",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.121.0"
+  }
+}

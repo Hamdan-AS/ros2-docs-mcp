@@ -1,0 +1,152 @@
+# Phase 5: package -> doc source mapping for bulk ingestion.
+# Generated 2026-08-09. Every entry is grounded, not guessed:
+#   - main_docs paths: verified present in the ros2_documentation git tree on the
+#     humble, jazzy and lyrical branches (single exception: lyrical lacks
+#     Single-Package-Define-And-Use-Interface.rst; the loader skips + reports 404s).
+#   - interfaces/readme repos: taken from ros/rosdistro distribution.yaml
+#     source URLs for each distro (rclpy/message_filters are single-package
+#     repos, so repo name == package name there).
+# Branch resolution at load time: distro branch -> rolling -> master -> main.
+
+ros2_documentation:
+  repo: ros2/ros2_documentation
+  # {distro} is substituted per in-scope distro; {path} is each main_docs entry.
+  raw: "https://raw.githubusercontent.com/ros2/ros2_documentation/{distro}/source/{path}.rst"
+
+packages:
+  rclpy:
+    main_docs:
+      - Concepts/Basic/About-Client-Libraries
+      - Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber
+      - Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Service-And-Client
+      - Tutorials/Beginner-Client-Libraries/Using-Parameters-In-A-Class-Python
+      - Tutorials/Beginner-Client-Libraries/Getting-Started-With-Ros2doctor
+
+  rclcpp:
+    main_docs:
+      - Concepts/Basic/About-Client-Libraries
+      - Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Publisher-And-Subscriber
+      - Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Service-And-Client
+      - Tutorials/Beginner-Client-Libraries/Using-Parameters-In-A-Class-CPP
+      - Tutorials/Intermediate/Using-Node-Interfaces-Template-Class
+
+  rclcpp_lifecycle:
+    main_docs:
+      - Tutorials/Demos/Managed-Nodes
+
+  rclcpp_components:
+    main_docs:
+      - Concepts/Intermediate/About-Composition
+      - Tutorials/Intermediate/Composition
+      - Tutorials/Intermediate/Writing-a-Composable-Node
+      - How-To-Guides/Launching-composable-nodes
+
+  rclcpp_action:
+    main_docs:
+      - Concepts/Basic/About-Actions
+      - Tutorials/Intermediate/Creating-an-Action
+      - Tutorials/Intermediate/Writing-an-Action-Server-Client/Cpp
+
+  tf2:
+    main_docs:
+      - Concepts/Intermediate/About-Tf2
+      - Tutorials/Intermediate/Tf2/Introduction-To-Tf2
+      - Tutorials/Intermediate/Tf2/Tf2-Main
+      - Tutorials/Intermediate/Tf2/Quaternion-Fundamentals
+      - Tutorials/Intermediate/Tf2/Adding-A-Frame-Cpp
+      - Tutorials/Intermediate/Tf2/Adding-A-Frame-Py
+      - Tutorials/Intermediate/Tf2/Debugging-Tf2-Problems
+      - Tutorials/Intermediate/Tf2/Learning-About-Tf2-And-Time-Cpp
+      - Tutorials/Intermediate/Tf2/Time-Travel-With-Tf2-Cpp
+      - Tutorials/Intermediate/Tf2/Writing-A-Tf2-Broadcaster-Cpp
+      - Tutorials/Intermediate/Tf2/Writing-A-Tf2-Broadcaster-Py
+      - Tutorials/Intermediate/Tf2/Writing-A-Tf2-Listener-Cpp
+      - Tutorials/Intermediate/Tf2/Writing-A-Tf2-Listener-Py
+      - Tutorials/Intermediate/Tf2/Writing-A-Tf2-Static-Broadcaster-Cpp
+      - Tutorials/Intermediate/Tf2/Writing-A-Tf2-Static-Broadcaster-Py
+
+  tf2_ros:
+    main_docs:
+      - Concepts/Intermediate/About-Tf2
+      - Tutorials/Intermediate/Tf2/Introduction-To-Tf2
+      - Tutorials/Intermediate/Tf2/Tf2-Main
+      - Tutorials/Intermediate/Tf2/Using-Stamped-Datatypes-With-Tf2-Ros-MessageFilter
+      - How-To-Guides/Sync-Vs-Async
+
+  tf2_geometry_msgs:
+    main_docs:
+      - Concepts/Intermediate/About-Tf2
+      - Tutorials/Intermediate/Tf2/Quaternion-Fundamentals
+      - Tutorials/Intermediate/Tf2/Using-Stamped-Datatypes-With-Tf2-Ros-MessageFilter
+
+  launch:
+    main_docs:
+      - Concepts/Basic/About-Launch
+      - Tutorials/Intermediate/Launch/Launch-Main
+      - Tutorials/Intermediate/Launch/Creating-Launch-Files
+      - Tutorials/Intermediate/Launch/Using-Substitutions
+      - Tutorials/Intermediate/Launch/Using-Event-Handlers
+      - Tutorials/Intermediate/Launch/Using-ROS2-Launch-For-Large-Projects
+      - How-To-Guides/Launch-file-different-formats
+
+  launch_ros:
+    main_docs:
+      - Tutorials/Intermediate/Launch/Launch-Main
+      - Tutorials/Intermediate/Launch/Creating-Launch-Files
+      - Tutorials/Intermediate/Launch/Using-Substitutions
+      - Tutorials/Intermediate/Launch/Using-Event-Handlers
+      - Tutorials/Intermediate/Launch/Using-ROS2-Launch-For-Large-Projects
+      - How-To-Guides/Launching-composable-nodes
+
+  message_filters:
+    readme:
+      repo: ros2/message_filters
+
+  image_transport:
+    readme:
+      repo: ros-perception/image_common
+
+  cv_bridge:
+    readme:
+      repo: ros-perception/vision_opencv
+      path: cv_bridge/README.md
+
+  geometry_msgs:
+    interfaces:
+      repo: ros2/common_interfaces
+      paths: [geometry_msgs/msg]
+
+  sensor_msgs:
+    interfaces:
+      repo: ros2/common_interfaces
+      paths: [sensor_msgs/msg, sensor_msgs/srv]
+
+  std_msgs:
+    interfaces:
+      repo: ros2/common_interfaces
+      paths: [std_msgs/msg]
+
+  nav_msgs:
+    interfaces:
+      repo: ros2/common_interfaces
+      paths: [nav_msgs/msg, nav_msgs/srv]
+
+  action_msgs:
+    interfaces:
+      repo: ros2/rcl_interfaces
+      paths: [action_msgs/msg, action_msgs/srv]
+
+  rcl_interfaces:
+    interfaces:
+      repo: ros2/rcl_interfaces
+      paths: [rcl_interfaces/msg, rcl_interfaces/srv]
+
+  rviz2:
+    main_docs:
+      - Tutorials/Intermediate/RViz/RViz-Main
+      - Tutorials/Intermediate/RViz/RViz-User-Guide/RViz-User-Guide
+
+  realsense2_camera:
+    readme:
+      repo: realsenseai/realsense-ros
+      ref: ros2-development  # no distro branches; ROS2 line lives on this branch

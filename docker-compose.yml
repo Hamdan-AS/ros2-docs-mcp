@@ -1,0 +1,23 @@
+# ROS2-Docs MCP — local dev database (Phase 3)
+# Postgres 16 with the shared-prefix/trigram contrib available, but no pgvector
+# (ground rule: FTS first, embeddings only if FTS proves insufficient).
+services:
+  db:
+    image: postgres:16
+    container_name: ros2docs-db
+    environment:
+      POSTGRES_USER: ros2docs
+      POSTGRES_PASSWORD: ros2docs
+      POSTGRES_DB: ros2docs
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ros2docs -d ros2docs"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

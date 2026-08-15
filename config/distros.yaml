@@ -1,0 +1,57 @@
+# ROS 2 distribution scope and lifecycle data.
+# EOL dates verified 2026-08-09 against:
+#   - REP 2000 (reps.openrobotics.org/rep-2000)
+#   - ROS 2 Releases table (docs.ros.org/en/jazzy/Releases.html)
+#   - endoflife.date/ros-2
+#
+# In scope: all currently-supported LTS distros. Kilted excluded (non-LTS,
+# EOL Dec 2026). Rolling excluded (non-release dev stream).
+
+distros:
+  - name: humble
+    full_name: Humble Hawksbill
+    released: "2022-05-23"
+    eol: "2027-05-31"
+    lts: true
+    in_scope: true
+
+  - name: jazzy
+    full_name: Jazzy Jalisco
+    released: "2024-05-23"
+    eol: "2029-05-31"
+    lts: true
+    in_scope: true
+
+  - name: lyrical
+    full_name: Lyrical Luth
+    released: "2026-05-22"
+    eol: "2031-05-31"
+    lts: true
+    in_scope: true
+
+  - name: kilted
+    full_name: Kilted Kaiju
+    released: "2025-05-23"
+    eol: "2026-12-31"
+    lts: false
+    in_scope: false
+    note: "Non-LTS, EOL imminent — excluded from ingestion."
+
+  - name: rolling
+    full_name: Rolling Ridley
+    released: null
+    eol: null
+    lts: false
+    in_scope: false
+    note: "Rolling development distribution — excluded."
+
+# Source repos for docs ingestion (git clone / raw fetch; docs.ros.org HTML
+# itself is Anubis-protected and not scraped).
+docs_sources:
+  ros2_documentation:
+    repo: "ros2/ros2_documentation"
+    branch_by_distro: true   # branch name == distro name (humble, jazzy, lyrical)
+    source_root: "source"
+  per_package:
+    note: "Package API docs live in each package's own repository; availability
+           cross-checked against index.ros.org during ingestion."

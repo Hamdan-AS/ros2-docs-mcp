@@ -1,0 +1,5 @@
+# Local Wrangler development only. Do not commit a real .dev.vars file.
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
+RATE_LIMIT_DAILY=75
+# Comma-separated browser origins. Server-to-server MCP clients send no Origin.
+ALLOWED_ORIGINS=http://localhost:3000

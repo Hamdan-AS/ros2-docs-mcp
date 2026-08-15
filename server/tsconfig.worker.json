@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "lib": ["ES2022", "WebWorker"],
+    "types": ["@cloudflare/workers-types"]
+  },
+  "include": ["src/access.ts", "src/distros.ts", "src/mcp.ts", "src/repository.ts", "src/search-query.ts", "src/worker-repository.ts", "src/worker.ts"]
+}
