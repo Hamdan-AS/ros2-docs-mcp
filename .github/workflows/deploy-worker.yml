@@ -44,3 +44,9 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: server
           command: deploy
+      - name: Verify live credit lifecycle
+        working-directory: server
+        env:
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          MCP_URL: https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp
+        run: npm run test:lifecycle

@@ -70,7 +70,9 @@ test user.
 - The deployment workflow runs the server tests and Worker type-check before
   applying idempotent Neon migrations and deploying. A test, type-check, or
   migration failure prevents deployment, so the Worker cannot start against an
-  older schema. The workflow requires the `NEON_DATABASE_URL` repository secret.
+  older schema. After deployment, an isolated temporary user verifies the live
+  credit/cooldown, revocation, and replacement lifecycle and is deleted. The
+  workflow requires the `NEON_DATABASE_URL` repository secret.
 - Roll back by reverting the faulty Git commit and pushing the revert.
 
 ## Monitoring
