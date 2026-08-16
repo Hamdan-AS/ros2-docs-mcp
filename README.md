@@ -19,6 +19,9 @@ https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/
 https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/privacy
 ```
 
+The locally verified source also defines `/faq` and `/signup`; those routes are
+not claimed as live until Turnstile/Resend configuration and deployment pass.
+
 It is compatible with MCP-capable clients that support Streamable HTTP and custom
 headers. That does **not** mean every chatbot product can connect directly; a
 client must implement MCP and allow an `Authorization` header.
@@ -51,8 +54,8 @@ advertised by the public Worker.
    NEON_DATABASE_URL="$DATABASE_URL" npm run migrate
    ```
 
-4. Issue a bearer key from a trusted machine with the key-admin command. The raw
-   token is printed once; the database stores only its SHA-256 hash.
+4. Manual key administration remains available for support and recovery. Normal
+   customer access uses the self-serve Turnstile and email-OTP flow.
 
    ```bash
    cd server
@@ -68,6 +71,15 @@ advertised by the public Worker.
    npx wrangler secret put DATABASE_URL
    npx wrangler secret put CREDIT_LIMIT      # use 75
    npx wrangler secret put ALLOWED_ORIGINS    # e.g. https://app.example.com
+   npx wrangler secret put TURNSTILE_SITE_KEY
+   npx wrangler secret put TURNSTILE_SECRET_KEY
+   npx wrangler secret put TURNSTILE_HOSTNAME
+   npx wrangler secret put OTP_PEPPER
+   npx wrangler secret put RESEND_API_KEY
+   npx wrangler secret put RESEND_FROM_EMAIL
+   npx wrangler secret put SIGNUP_MODE          # disabled, operator_test, or public
+   npx wrangler secret put SIGNUP_TEST_EMAIL_HASH
+   npx wrangler secret put SUPPORT_URL          # optional Patreon HTTPS URL
    ```
 
 6. Type-check and deploy. Cloudflare assigns a `workers.dev` hostname; adding a
@@ -85,6 +97,11 @@ consumes one of the user's 75 credits. Credits do not expire on a schedule. The
 75th accepted request starts a 48-hour cooldown; requests during that cooldown
 return `429` with `reset_at`. Missing/invalid keys return `401`, and browser
 origins outside `ALLOWED_ORIGINS` return `403`.
+
+Authenticated responses expose limit/remaining headers. Consuming the final
+credit also returns `X-ROS2-Docs-Warning` and `X-RateLimit-Reset-At` without
+modifying the MCP JSON-RPC body. The subsequent `429` uses English by default
+and Roman Urdu for the locked South Asian country set reported by Cloudflare.
 
 ## Connecting a generic MCP client
 
@@ -104,10 +121,9 @@ connection is equivalent to:
 Never paste a bearer key into a public client configuration or commit it to a
 repository.
 
-See [`docs/CUSTOMER_SETUP.md`](docs/CUSTOMER_SETUP.md) for copy-paste Claude
-Code and VS Code instructions, plus MCP Inspector diagnostics. Beta users can
-request an individual key through the repository's **Beta access request** issue
-form; keys are delivered privately.
+See [`docs/CUSTOMER_SETUP.md`](docs/CUSTOMER_SETUP.md) for self-serve access,
+copy-paste Claude Code and VS Code instructions, plus MCP Inspector diagnostics.
+The retired public GitHub issue form is not an access path.
 
 ## Development and verification
 
@@ -129,8 +145,9 @@ production smoke tests, refresh, deployment, rollback, and monitoring.
 Key issue, list, revoke, replacement, and per-user limit overrides are handled
 by `server/src/key_admin.ts` through the `key:*` npm scripts. Usage is counted
 atomically in Neon Postgres, so the credit state is shared across stateless Worker
-instances rather than held in process memory. The `usage:cleanup` command and
-scheduled workflow remove historical daily usage records older than 90 days.
+instances rather than held in process memory. The `usage:cleanup` and
+`signup:cleanup` commands and scheduled workflow remove historical daily usage
+and stale verification state at their documented boundaries.
 
 With a valid key, test the local Worker via the MCP Inspector or any Streamable
 HTTP client. Check tool discovery, `search_docs` for all three distros, and
@@ -167,9 +184,19 @@ isolated live credit lifecycle. Add these repository secrets before using it:
 - `CLOUDFLARE_ACCOUNT_ID` — the target Cloudflare account ID.
 - `NEON_DATABASE_URL` — direct Neon connection used for migrations before deploy.
 
-Worker runtime secrets (`DATABASE_URL`, `CREDIT_LIMIT`, and
-`ALLOWED_ORIGINS`) are configured with Wrangler once and are not copied through
-GitHub Actions.
+Worker runtime secrets are configured with Wrangler once and are not copied
+through GitHub Actions. In addition to database/quota/origin settings, self-serve
+signup requires the Turnstile, OTP pepper, and Resend values listed above.
+`SIGNUP_MODE` defaults to `disabled`. Use `operator_test` only with a hashed
+operator allow-list value generated locally:
+
+```bash
+OTP_PEPPER='the-same-worker-secret' npm run signup:hash-email -- operator@example.com
+```
+
+Resend's test sender is only for the operator acceptance test. Keep public
+signup disabled until a custom domain is verified in Resend; Gmail is not a
+fallback in this release plan.
 
 The customer site is also hosted on Cloudflare Workers. Changes under `site/**`
 run lint, rendered-content tests, and a production deployment through
@@ -179,9 +206,9 @@ run lint, rendered-content tests, and a production deployment through
 ## Release path
 
 The current release target is a small, best-effort beta through manually added
-custom connectors. Each customer receives a separate, privately delivered and
-individually revocable bearer key. The customer site is informational only and
-does not issue, accept, or store credentials.
+custom connectors. A user passes Turnstile and email OTP verification, then
+receives one separate, privately delivered and individually revocable bearer
+key. The customer site never receives or stores the key.
 
 An official Claude Connectors Directory submission is a separate post-beta
 milestone. It is intentionally deferred until the project has an OAuth 2.0

@@ -37,6 +37,11 @@ jobs:
         env:
           NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
         run: npm run migrate
+      - name: Verify signup database lifecycle
+        working-directory: server
+        env:
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: npm run test:signup-db
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:

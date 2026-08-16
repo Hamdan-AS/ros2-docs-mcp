@@ -6,11 +6,13 @@ import type {
   CreditQuotaResult,
   DocSearchResult,
   DocsRepository,
+  SignupRepository,
+  SignupVerificationStatus,
 } from "./repository.js";
 import { buildDocsSearchQuery } from "./search-query.js";
 
 /** Neon HTTP repository.  It uses fetch, so it is safe in Cloudflare Workers. */
-export class NeonHttpRepository implements DocsRepository, ApiAccessRepository {
+export class NeonHttpRepository implements DocsRepository, ApiAccessRepository, SignupRepository {
   private readonly sql;
 
   constructor(databaseUrl: string) {
@@ -49,5 +51,29 @@ export class NeonHttpRepository implements DocsRepository, ApiAccessRepository {
     const result = rows[0];
     if (!result) throw new Error("Quota function returned no result.");
     return result;
+  }
+
+  async beginSignup(email: string, otpHash: string): Promise<boolean> {
+    const rows = await this.sql.query<false, false>(
+      "SELECT should_send FROM begin_api_signup($1, $2)",
+      [email, otpHash]
+    ) as { should_send: boolean }[];
+    return rows[0]?.should_send === true;
+  }
+
+  async cancelSignup(email: string, otpHash: string): Promise<void> {
+    await this.sql.query("SELECT cancel_api_signup($1, $2)", [email, otpHash]);
+  }
+
+  async verifySignup(email: string, otpHash: string, keyHash: string): Promise<SignupVerificationStatus> {
+    const rows = await this.sql.query<false, false>(
+      "SELECT status FROM verify_api_signup($1, $2, $3)",
+      [email, otpHash, keyHash]
+    ) as { status: SignupVerificationStatus }[];
+    return rows[0]?.status ?? "invalid";
+  }
+
+  async rollbackKeyDelivery(email: string, keyHash: string, otpHash: string): Promise<void> {
+    await this.sql.query("SELECT rollback_api_key_delivery($1, $2, $3)", [email, keyHash, otpHash]);
   }
 }

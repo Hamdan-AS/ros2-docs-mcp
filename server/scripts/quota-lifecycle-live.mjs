@@ -72,12 +72,18 @@ try {
 
   const first = await post(issued.token, 3, "initialize", initializeParams());
   assert.equal(first.status, 200, `first allowed request returned ${first.status}`);
+  assert.equal(first.headers.get("x-ratelimit-limit"), "2", "first request omitted quota limit header");
+  assert.equal(first.headers.get("x-ratelimit-remaining"), "1", "first request omitted remaining-credit header");
   const second = await post(issued.token, 4, "tools/list");
   assert.equal(second.status, 200, `second allowed request returned ${second.status}`);
+  assert.equal(second.headers.get("x-ratelimit-remaining"), "0", "final credit did not report zero remaining");
+  assert.equal(second.headers.get("x-ros2-docs-warning"), "Last credit consumed; cooldown started");
+  assert.ok(Date.parse(second.headers.get("x-ratelimit-reset-at")), "final credit omitted reset timestamp");
   const limited = await post(issued.token, 5, "tools/list");
   assert.equal(limited.status, 429, `over-limit request returned ${limited.status}`);
   const limitedBody = await limited.json();
-  assert.match(limitedBody.error, /paused for 48 hours/);
+  assert.match(limitedBody.error, /self-funded service/);
+  assert.equal(limitedBody.reason, "self_funded_capacity");
   assert.ok(Date.parse(limitedBody.reset_at), "429 response omitted a valid reset_at");
   assert.ok(Number(limited.headers.get("retry-after")) > 0, "429 response omitted Retry-After");
 

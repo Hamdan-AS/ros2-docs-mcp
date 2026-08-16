@@ -9,5 +9,5 @@
     "lib": ["ES2022", "WebWorker"],
     "types": ["@cloudflare/workers-types"]
   },
-  "include": ["src/access.ts", "src/distros.ts", "src/mcp.ts", "src/repository.ts", "src/search-query.ts", "src/worker-repository.ts", "src/worker.ts"]
+  "include": ["src/access.ts", "src/distros.ts", "src/mcp.ts", "src/repository.ts", "src/runtime-policy.ts", "src/search-query.ts", "src/signup.ts", "src/worker-repository.ts", "src/worker.ts"]
 }

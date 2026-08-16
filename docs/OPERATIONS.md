@@ -45,6 +45,60 @@ log, restore database connectivity or the secret, and rerun the workflow
 manually. Repeated runs are safe because only rows with
 `usage_date < CURRENT_DATE - INTERVAL '90 days'` are deleted.
 
+The same workflow also runs `npm run signup:cleanup`. It removes completed
+verification rows after seven days and unverified rows after 24 stale hours,
+but preserves active two-hour bans. Both cleanup commands print aggregate counts
+only.
+
+## Self-serve signup
+
+Configure the production Turnstile widget for the customer-site hostname and a
+verified Resend sender. Then set the Worker values with `wrangler secret put`:
+
+```text
+TURNSTILE_SITE_KEY
+TURNSTILE_SECRET_KEY
+TURNSTILE_HOSTNAME
+OTP_PEPPER
+RESEND_API_KEY
+RESEND_FROM_EMAIL
+SIGNUP_MODE
+SIGNUP_TEST_EMAIL_HASH
+SUPPORT_URL
+```
+
+`OTP_PEPPER` must be a generated high-entropy secret. `ALLOWED_ORIGINS` must
+include the exact HTTPS customer-site origin. Never put these values in GitHub
+workflow YAML, logs, or frontend code. The public site key is returned by
+`GET /signup/config`; all other values remain server-side.
+
+Signup modes fail closed:
+
+- `disabled`: endpoints return unavailable and the customer form stays closed.
+- `operator_test`: only the email matching `SIGNUP_TEST_EMAIL_HASH` can receive
+  Resend test messages; public UI remains closed.
+- `public`: enabled only after a sending domain is verified in Resend.
+
+Generate the allow-list HMAC without storing the raw address in configuration:
+
+```bash
+cd server
+OTP_PEPPER="$OTP_PEPPER" npm run signup:hash-email -- operator@example.com
+```
+
+Do not use Gmail as an interim sender. The real-user beta waits for a verified
+domain. `SUPPORT_URL` is optional and ignored unless it is an HTTPS Patreon URL.
+
+After migration, run `NEON_DATABASE_URL=... npm run test:signup-db`. It checks
+resend throttling, the three-failure ban, one-active-key enforcement, and quota
+initialization using temporary records that are deleted in `finally`.
+
+Quota acceptance must also confirm the final successful request returns
+`X-RateLimit-Remaining: 0`, `X-RateLimit-Reset-At`, and
+`X-ROS2-Docs-Warning` while preserving the MCP JSON-RPC body. The next request
+must return localized `429` JSON with `reason=self_funded_capacity`, `reset_at`,
+and optional `support_url`.
+
 ## Verification
 
 ```bash
@@ -80,3 +134,7 @@ test user.
 - `production-health-check` validates `/health` and the `401` gate hourly.
 - GitHub Actions reports deployment and ingestion failures.
 - Cloudflare and Neon dashboards remain the source for traffic, errors, and cost.
+
+Provider alert setup remains a dashboard operation: send Cloudflare Worker error,
+GitHub Actions failure, and Neon usage/budget notifications to
+`qwerty_786@protonmail.com`, then record one successful test from each provider.

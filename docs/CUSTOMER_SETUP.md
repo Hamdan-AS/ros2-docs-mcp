@@ -10,6 +10,17 @@ Each beta user receives an individual `r2d_...` key with 75 credits. Credits do
 not expire on a schedule. Consuming the 75th credit starts a 48-hour cooldown.
 Never commit or post the key publicly.
 
+## Get beta access
+
+Public signup opens only after a production email domain is verified. After
+production enablement, open
+`https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/signup`, complete
+the Turnstile check, and verify the six-digit code emailed to you. The code is
+valid for 10 minutes. Three incorrect attempts pause verification for two hours;
+resends wait 60 seconds and are limited to three per two hours. A successful
+verification privately emails one key. Repeating signup does not reveal or
+replace an existing active key.
+
 ## Officially supported clients
 
 - Claude Code
@@ -90,6 +101,11 @@ npx @modelcontextprotocol/inspector --cli \
   response's `reset_at` timestamp or `Retry-After` header before retrying.
 - `500` or `503`: service failure; retry later and report the failure time.
 
-To request beta access, use the
-[beta access form](https://github.com/Hamdan-AS/ros2-docs-mcp/issues/new?template=beta-access.yml).
-Never include credentials in an issue; keys must be delivered privately.
+The final successful credit returns quota headers warning that cooldown has
+started. Capacity messages use English by default and Roman Urdu for the South
+Asian country set reported by Cloudflare. A Patreon link, when configured, is
+voluntary and never changes access or quotas.
+
+For lost or revoked keys, email `qwerty_786@protonmail.com`. Raw keys cannot be
+recovered because the service stores only hashes. Never include a key in a
+public issue, screenshot, or support message.

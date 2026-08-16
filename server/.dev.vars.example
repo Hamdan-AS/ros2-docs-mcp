@@ -1,5 +1,16 @@
 # Local Wrangler development only. Do not commit a real .dev.vars file.
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
-RATE_LIMIT_DAILY=75
+CREDIT_LIMIT=75
 # Comma-separated browser origins. Server-to-server MCP clients send no Origin.
-ALLOWED_ORIGINS=http://localhost:3000
+ALLOWED_ORIGINS=http://localhost:3000,https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev
+TURNSTILE_SITE_KEY=replace-with-public-site-key
+TURNSTILE_SECRET_KEY=replace-with-secret-key
+TURNSTILE_HOSTNAME=localhost
+OTP_PEPPER=replace-with-at-least-32-random-bytes
+RESEND_API_KEY=re_replace_me
+RESEND_FROM_EMAIL="ROS2-Docs MCP <access@example.com>"
+SIGNUP_MODE=disabled
+# Required only for operator_test. Generate with npm run signup:hash-email.
+SIGNUP_TEST_EMAIL_HASH=replace-with-64-character-hmac
+# Optional; must be an HTTPS patreon.com URL or it is ignored.
+SUPPORT_URL=

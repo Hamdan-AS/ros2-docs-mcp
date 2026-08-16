@@ -1,6 +1,6 @@
 # ROS2-Docs MCP — Project Status
 
-> Updated: 2026-08-15
+> Updated: 2026-08-16
 
 ## Achieved
 
@@ -85,13 +85,25 @@
     `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31896567228`
 - Locked customer clients to Claude Code and Visual Studio Code; MCP Inspector
   remains the diagnostic client.
-- Added a structured GitHub beta-access request form that warns users not to
-  post secrets.
+- Implemented the self-serve source path: Turnstile verification, six-digit
+  email OTPs, atomic resend/failure bans, one active key per normalized email,
+  private Resend delivery, stale-state cleanup, and generic public responses.
+- Added local database lifecycle verification, 25 server tests, a `/signup`
+  page, a `/faq` page, updated privacy disclosures, and four rendered-site tests.
+- Retired the GitHub beta-access issue form from the customer access path.
+- Added fail-closed disabled/operator/public signup modes, an HMAC operator
+  allow-list, geo-aware English/Roman Urdu quota copy, final-credit headers,
+  optional Patreon-only support URLs, and six rendered-site scenarios.
 
 ## Remaining
 
 ### Immediate launch work
 
+- Create production Turnstile keys and a verified Resend sender, configure the
+  Worker secrets/origin, apply the migration, deploy Worker/site, and pass live
+  signup/email acceptance. Source implementation is complete but not yet live.
+- Use Resend operator-test mode for acceptance; public signup and the real-user
+  beta wait for a verified custom email domain. No Gmail fallback is planned.
 - Send Cloudflare Worker error, GitHub Actions failure, and Neon usage/cost
   alerts to `qwerty_786@protonmail.com`, then verify available test notifications.
 - Run a small three-to-five-user beta and collect setup/search-quality feedback.

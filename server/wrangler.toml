@@ -3,5 +3,8 @@ main = "src/worker.ts"
 compatibility_date = "2026-08-11"
 workers_dev = true
 
-# DATABASE_URL, CREDIT_LIMIT, and ALLOWED_ORIGINS are Worker secrets.
+# DATABASE_URL, CREDIT_LIMIT, ALLOWED_ORIGINS, TURNSTILE_SITE_KEY,
+# TURNSTILE_SECRET_KEY, TURNSTILE_HOSTNAME, OTP_PEPPER, RESEND_API_KEY, and
+# RESEND_FROM_EMAIL, SIGNUP_MODE, SIGNUP_TEST_EMAIL_HASH, and SUPPORT_URL are
+# Worker secrets/configuration. SIGNUP_MODE fails closed to disabled.
 # Configure them with `wrangler secret put …`; never commit their values.

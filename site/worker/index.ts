@@ -1,10 +1,12 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { configuredSupportUrl, localeForCountry } from "../lib/runtime-policy";
 
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
+  SUPPORT_URL?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -40,7 +42,13 @@ const worker = {
       }, allowedWidths);
     }
 
-    return handler.fetch(request, env, ctx);
+    const country = (request as Request & { cf?: { country?: string | null } }).cf?.country;
+    const headers = new Headers(request.headers);
+    headers.set("x-ros2-docs-locale", localeForCountry(country));
+    const supportUrl = configuredSupportUrl(env.SUPPORT_URL);
+    if (supportUrl) headers.set("x-ros2-docs-support-url", supportUrl);
+    else headers.delete("x-ros2-docs-support-url");
+    return handler.fetch(new Request(request, { headers }), env, ctx);
   },
 };
 

@@ -34,7 +34,7 @@ export default function PrivacyPage() {
             explains what the hosted service processes, why it is needed, and how
             long it is retained.
           </p>
-          <p className="effectiveDate">Effective August 15, 2026</p>
+          <p className="effectiveDate">Effective August 16, 2026</p>
         </header>
 
         <div className="legalContent">
@@ -51,11 +51,11 @@ export default function PrivacyPage() {
             <h2>Data we process</h2>
             <ul>
               <li>
-                <strong>Access data:</strong> an operator-created customer label,
-                service tier, optional credit limit, a SHA-256 hash of the issued API
-                key, and key creation and last-used timestamps. Raw API keys are
-                displayed when issued or replaced and are not stored in the service
-                database.
+                <strong>Access and signup data:</strong> a normalized email address,
+                service tier, optional credit limit, SHA-256 API-key hashes, HMAC
+                one-time-code hashes, verification timestamps and counters, and key
+                creation and last-used timestamps. Raw API keys and raw one-time
+                codes are emailed privately and are not stored in the service database.
               </li>
               <li>
                 <strong>Usage data:</strong> the customer record, credits consumed,
@@ -74,11 +74,17 @@ export default function PrivacyPage() {
                 and investigate abuse. Application errors are deliberately logged
                 without database URLs, API keys, search text, or driver details.
               </li>
+              <li>
+                <strong>Country-based presentation:</strong> Cloudflare provides
+                the request country at the network edge. The application uses it
+                only to choose English or Roman Urdu quota messaging and does not
+                write the country value to project tables or application logs.
+              </li>
             </ul>
             <p>
-              The landing site does not use an account form, advertising tracker,
-              or project-owned analytics cookie. Links to GitHub and the service
-              health endpoint take you to those external services.
+              The signup form sends the submitted email and Cloudflare Turnstile
+              result to the MCP Worker. The landing site does not use an advertising
+              tracker or project-owned analytics cookie.
             </p>
           </section>
 
@@ -95,22 +101,34 @@ export default function PrivacyPage() {
           <section>
             <h2>Service providers</h2>
             <p>
-              Cloudflare hosts the landing site and MCP Worker. Neon hosts the
-              Postgres database. GitHub hosts the source repository, support path,
-              and deployment automation. These providers may process infrastructure
-              metadata under their own terms and privacy policies.
+              Cloudflare hosts the landing site and MCP Worker and provides the
+              Turnstile bot check. Neon hosts the Postgres database. Resend delivers
+              verification codes and access keys by email. GitHub hosts the source
+              repository and deployment automation. These providers may process
+              infrastructure metadata under their own terms and privacy policies.
+            </p>
+            <p>
+              If a voluntary-support link is configured, it points to Patreon.
+              Visiting that external link is optional and is governed by Patreon&apos;s
+              own terms and privacy policy; support never changes service access.
             </p>
           </section>
 
           <section>
             <h2>Retention and deletion</h2>
             <p>
-              Customer records, API-key hashes, and current credit/cooldown state
+              Verified customer records, normalized emails, API-key hashes, and current credit/cooldown state
               remain until access is revoked or the record is deleted. Historical
               daily usage records are automatically deleted after 90 days. Last-used
               timestamps remain with the customer record for access administration.
               Temporary acceptance-test users, keys, and usage rows are deleted
               after the test.
+            </p>
+            <p>
+              Expired unverified signup state is removed after it is stale for 24
+              hours and any temporary ban has ended. Completed verification rows are
+              removed after seven days; the verified customer record remains while
+              its access key is active.
             </p>
             <p>
               A customer may request access revocation or deletion by emailing
@@ -157,6 +175,7 @@ export default function PrivacyPage() {
         <div>
           <a href={repository}>Source</a>
           <a href={contactHref}>Support</a>
+          <a href="/faq">FAQ</a>
           <a href="/privacy" aria-current="page">Privacy</a>
         </div>
       </footer>

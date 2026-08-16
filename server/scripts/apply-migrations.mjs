@@ -14,6 +14,7 @@ const migrations = [
   "20260812_worker_rate_limits.sql",
   "20260815_user_daily_limits.sql",
   "20260815_credit_cooldown.sql",
+  "20260816_self_serve_signup.sql",
 ];
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const migrationsDir = path.resolve(scriptDir, "..", "..", "db", "migrations");

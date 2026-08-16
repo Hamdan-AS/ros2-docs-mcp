@@ -33,8 +33,12 @@ CREATE TABLE IF NOT EXISTS users (
     name       TEXT NOT NULL,
     tier       TEXT NOT NULL DEFAULT 'free',
     credit_limit INTEGER CHECK (credit_limit IS NULL OR credit_limit > 0),
+    email_normalized TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS users_email_normalized_unique
+    ON users (email_normalized) WHERE email_normalized IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS api_keys (
     id           SERIAL PRIMARY KEY,
@@ -43,6 +47,8 @@ CREATE TABLE IF NOT EXISTS api_keys (
     created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
     last_used_at TIMESTAMPTZ
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS api_keys_one_active_per_user ON api_keys (user_id);
 
 -- Historical UTC-day request counts retained for 90-day operational reporting.
 CREATE TABLE IF NOT EXISTS api_daily_usage (
@@ -57,4 +63,18 @@ CREATE TABLE IF NOT EXISTS api_quota_state (
     user_id        INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     credits_used   INTEGER NOT NULL DEFAULT 0 CHECK (credits_used >= 0),
     cooldown_until TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS api_signup_verifications (
+    email_normalized TEXT PRIMARY KEY,
+    otp_hash TEXT,
+    otp_expires_at TIMESTAMPTZ,
+    failed_attempts INTEGER NOT NULL DEFAULT 0 CHECK (failed_attempts >= 0),
+    banned_until TIMESTAMPTZ,
+    send_window_start TIMESTAMPTZ NOT NULL DEFAULT now(),
+    send_count INTEGER NOT NULL DEFAULT 0 CHECK (send_count >= 0),
+    last_sent_at TIMESTAMPTZ,
+    verified_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

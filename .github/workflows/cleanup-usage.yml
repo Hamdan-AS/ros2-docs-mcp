@@ -26,3 +26,8 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
         run: npm run usage:cleanup
+      - name: Delete expired and stale signup state
+        working-directory: server
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: npm run signup:cleanup

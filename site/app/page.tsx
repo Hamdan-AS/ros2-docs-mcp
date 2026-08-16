@@ -1,8 +1,12 @@
+import { headers } from "next/headers";
+
 const endpoint = "https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp";
-const requestUrl = "https://github.com/Hamdan-AS/ros2-docs-mcp/issues/new?template=beta-access.yml";
 const supportEmail = "qwerty_786@protonmail.com";
 
-export default function Home() {
+export default async function Home() {
+  const requestHeaders = await headers();
+  const romanUrdu = requestHeaders.get("x-ros2-docs-locale") === "ur-Latn";
+  const supportUrl = requestHeaders.get("x-ros2-docs-support-url");
   return (
     <main>
       <nav className="nav" aria-label="Primary navigation">
@@ -13,19 +17,20 @@ export default function Home() {
         <div className="navLinks">
           <a href="#setup">Setup</a>
           <a href="#service">Service</a>
+          <a href="/faq">FAQ</a>
           <a href="https://github.com/Hamdan-AS/ros2-docs-mcp">GitHub</a>
         </div>
       </nav>
 
       <section className="hero" id="top">
-        <div className="eyebrow"><span className="pulse" /> Public beta · best effort</div>
+        <div className="eyebrow"><span className="pulse" /> Beta preview · best effort</div>
         <h1>ROS 2 answers,<br /><span>grounded in the docs.</span></h1>
         <p className="heroCopy">
           Search indexed documentation for Humble, Jazzy, and Lyrical directly from
           your AI coding client. Every result includes its source.
         </p>
         <div className="heroActions">
-          <a className="button primary" href={requestUrl}>Request a beta key</a>
+          <a className="button primary" href="/signup">Beta access status</a>
           <a className="button secondary" href="#setup">Connect your client</a>
         </div>
         <div className="distroRow" aria-label="Supported ROS 2 distributions">
@@ -39,6 +44,16 @@ export default function Home() {
         <article><strong>75 credits</strong><span>then 48h cooldown</span></article>
         <article><strong>2 tools</strong><span>small, focused surface</span></article>
       </section>
+
+      <aside className="fundingBanner" aria-label="Free service capacity note">
+        <div>
+          <strong>{romanUrdu ? "Free, self-funded service" : "Free, independently funded service"}</strong>
+          <p>{romanUrdu
+            ? "75th credit ke baad 48 ghantay ka cooldown shuru hota hai taake yeh self-funded service available rahe."
+            : "The 75th credit starts a 48-hour cooldown so this self-funded service can stay available."}</p>
+        </div>
+        {supportUrl && <a href={supportUrl}>{romanUrdu ? "Patreon par support karein" : "Support on Patreon"}</a>}
+      </aside>
 
       <section className="section" id="setup">
         <div className="sectionIntro">
@@ -124,8 +139,8 @@ export default function Home() {
       <section className="cta">
         <p className="kicker">Small public beta</p>
         <h2>Bring better ROS 2 context into your next session.</h2>
-        <p>Keys are issued individually and can be revoked without affecting other users.</p>
-        <a className="button light" href={requestUrl}>Request access on GitHub</a>
+        <p>Verify your email to receive one private, individually revocable key.</p>
+        <a className="button light" href="/signup">Check beta access</a>
       </section>
 
       <footer>
@@ -134,6 +149,7 @@ export default function Home() {
         <div>
           <a href="https://github.com/Hamdan-AS/ros2-docs-mcp">Source</a>
           <a href={`mailto:${supportEmail}`}>Support</a>
+          <a href="/faq">FAQ</a>
           <a href="/privacy">Privacy</a>
         </div>
       </footer>

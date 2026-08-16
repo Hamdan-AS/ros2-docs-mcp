@@ -59,6 +59,10 @@ code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospac
 .proof article:last-child { border-right: 0; }
 .proof strong { display: block; font-size: 30px; letter-spacing: -.04em; }
 .proof span { color: #afbbb3; font-size: 13px; }
+.fundingBanner { max-width: 1120px; margin: 18px auto 0; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; gap: 24px; border: 1px solid #b9d3c1; border-radius: 14px; background: #e5f4e9; }
+.fundingBanner strong { display: block; margin-bottom: 4px; }
+.fundingBanner p { margin: 0; color: var(--muted); line-height: 1.5; }
+.fundingBanner a { flex: none; color: var(--green-dark); font-weight: 800; }
 
 .section { max-width: 1120px; margin: 0 auto; padding: 120px 0; }
 .sectionIntro { max-width: 620px; margin-bottom: 46px; }
@@ -121,7 +125,29 @@ footer div { display: flex; justify-content: flex-end; gap: 18px; }
 .legalContent strong { color: var(--ink); }
 .legalContent a { color: var(--green-dark); font-weight: 750; }
 
-@media (max-width: 1180px) { .proof, .section, .cta, footer { margin-left: 24px; margin-right: 24px; } }
+.signupPage { max-width: 1040px; }
+.signupGrid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap: 28px; padding-top: 42px; }
+.signupForm, .signupNotes { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 28px; box-shadow: 0 15px 50px rgba(33,52,41,.05); }
+.formField { display: grid; gap: 8px; margin-bottom: 20px; }
+.formField label { font-weight: 750; }
+.formField input { width: 100%; min-height: 50px; border: 1px solid #aab8ad; border-radius: 9px; background: white; padding: 0 14px; color: var(--ink); font: inherit; }
+.formField input:focus { outline: 3px solid rgba(22,115,75,.2); border-color: var(--green); }
+.formField input:disabled { background: #edf0ea; color: var(--muted); }
+.turnstileSlot { min-height: 70px; margin: 8px 0 16px; }
+.formMessage { min-height: 48px; color: var(--muted); line-height: 1.5; }
+.signupForm button { border: 0; cursor: pointer; font-size: 15px; }
+.signupForm button:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.signupNotes h2 { margin: 0 0 18px; font-size: 25px; letter-spacing: -.03em; }
+.signupNotes ul { padding-left: 20px; }
+.signupNotes li, .signupNotes p { color: var(--muted); line-height: 1.65; margin-bottom: 12px; }
+.signupNotes a { color: var(--green-dark); font-weight: 750; }
+.faqList { max-width: 780px; }
+.faqList section { padding: 34px 0; border-bottom: 1px solid var(--line); }
+.faqList h2 { margin: 0 0 12px; font-size: 25px; letter-spacing: -.03em; }
+.faqList p { margin: 0; color: var(--muted); line-height: 1.7; }
+.faqList a { color: var(--green-dark); font-weight: 750; }
+
+@media (max-width: 1180px) { .proof, .fundingBanner, .section, .cta, footer { margin-left: 24px; margin-right: 24px; } }
 @media (max-width: 800px) {
   .navLinks { gap: 14px; }
   .navLinks a:first-child { display: none; }
@@ -131,9 +157,11 @@ footer div { display: flex; justify-content: flex-end; gap: 18px; }
   .proof article:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,.12); }
   .section { padding: 90px 0; }
   .setupGrid, .serviceGrid { grid-template-columns: 1fr; }
+  .signupGrid { grid-template-columns: 1fr; }
   .serviceGrid article { border-right: 0; border-bottom: 1px solid var(--line); }
   .toolList article { grid-template-columns: 1fr; gap: 12px; }
   .cta { padding: 46px 28px; }
+  .fundingBanner { align-items: flex-start; flex-direction: column; }
   footer { grid-template-columns: 1fr; }
   footer div { justify-content: flex-start; }
 }
@@ -142,7 +170,7 @@ footer div { display: flex; justify-content: flex-end; gap: 18px; }
   .navLinks a:nth-child(2) { display: none; }
   .hero { padding: 0 18px; }
   .hero h1 { font-size: 50px; }
-  .proof, .section, .cta, footer { margin-left: 14px; margin-right: 14px; }
+  .proof, .fundingBanner, .section, .cta, footer { margin-left: 14px; margin-right: 14px; }
   .proof article { padding: 21px; }
   .proof strong { font-size: 24px; }
   .setupCard { padding: 20px; }

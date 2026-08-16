@@ -41,7 +41,7 @@
 - **Phase 6:** hosted HTTP uses a 75-credit default. Credits do not expire on a schedule; consuming the final credit starts a 48-hour cooldown. Atomic state lives in Postgres and is shared across all stateless Worker instances.
 - **Phase 7:** `users` + `api_keys` tables (SHA-256 key hashes); key administration through `server/src/key_admin.ts` and the `npm run key:*` commands; HTTP auth always-on Bearer (401); 429 over budget; stdio unlimited by design.
 - **Phase 8:** schema + 63/2,234 moved to Neon; `server/src/db.ts` and ingest scripts read `DATABASE_URL` (SSL cloud / local defaults otherwise). Production is live at `https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp`. On 2026-08-15, GitHub deployment, weekly Neon refresh, authenticated SDK tool discovery, all three distro searches, per-user `429`, revoked-key `401`, replacement keys, and hourly health monitoring were verified.
-- **Phase 8C:** customer setup supports Claude Code and Visual Studio Code, MCP Inspector is documented for diagnostics, operator procedures and automated 90-day usage cleanup are present, and a beta access issue form plus landing-site/privacy source are ready for deployment.
+- **Phase 8C:** customer setup supports Claude Code and Visual Studio Code, MCP Inspector is documented for diagnostics, operator procedures and automated retention cleanup are present, and fail-closed self-serve signup, geo-aware quota messaging, FAQ, landing, and privacy source are locally verified pending provider configuration, a verified email domain, and production deployment.
 
 ---
 

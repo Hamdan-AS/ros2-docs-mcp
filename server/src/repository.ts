@@ -30,3 +30,16 @@ export interface ApiAccessRepository {
   /** Atomically consumes one credit or reports the active cooldown. */
   consumeCredit(userId: number, limit: number): Promise<CreditQuotaResult>;
 }
+
+export type SignupVerificationStatus = "issued" | "invalid" | "already_active";
+
+export interface SignupRepository {
+  /** Atomically applies resend and ban limits and stores the next hashed OTP. */
+  beginSignup(email: string, otpHash: string): Promise<boolean>;
+  /** Reverses a failed OTP-email attempt without exposing the address publicly. */
+  cancelSignup(email: string, otpHash: string): Promise<void>;
+  /** Atomically verifies an OTP, enforces the failure ban, and stores a key hash. */
+  verifySignup(email: string, otpHash: string, keyHash: string): Promise<SignupVerificationStatus>;
+  /** Removes a key whose delivery failed and restores the verified OTP for retry. */
+  rollbackKeyDelivery(email: string, keyHash: string, otpHash: string): Promise<void>;
+}

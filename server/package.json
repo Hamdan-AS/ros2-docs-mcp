@@ -21,10 +21,13 @@
     "key:set-limit": "npm run build && node dist/key_admin.js set-limit",
     "key:list": "npm run build && node dist/key_admin.js list",
     "usage:cleanup": "npm run build && node dist/usage_cleanup.js",
+    "signup:cleanup": "npm run build && node dist/signup_cleanup.js",
+    "signup:hash-email": "npm run build && node dist/signup_allowlist.js",
     "migrate": "node scripts/apply-migrations.mjs",
     "smoke:public": "node scripts/smoke-public.mjs",
     "smoke:live": "node scripts/smoke-live.mjs",
     "test:lifecycle": "node scripts/quota-lifecycle-live.mjs",
+    "test:signup-db": "node scripts/signup-lifecycle-db.mjs",
     "test": "npm run build && node --test dist/tests/*.test.js"
   },
   "license": "ISC",
