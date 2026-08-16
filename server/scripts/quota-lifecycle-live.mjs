@@ -23,6 +23,10 @@ const pool = new pg.Pool({
 const testName = `quota-lifecycle-${Date.now()}`;
 let userId;
 
+const PROPAGATION_LIMIT = 20;
+const PROPAGATION_ATTEMPTS = 12;
+const PROPAGATION_DELAY_MS = 5_000;
+
 function makeKey() {
   const token = `r2d_${randomBytes(32).toString("base64url")}`;
   const hash = createHash("sha256").update(token).digest("hex");
@@ -52,6 +56,18 @@ function initializeParams() {
   };
 }
 
+async function waitForDeployedQuotaHeaders(token) {
+  for (let attempt = 1; attempt <= PROPAGATION_ATTEMPTS; attempt += 1) {
+    const response = await post(token, `propagation-${attempt}`, "initialize", initializeParams());
+    assert.equal(response.status, 200, `deployment readiness request returned ${response.status}`);
+    if (response.headers.get("x-ratelimit-limit") === String(PROPAGATION_LIMIT)) return;
+    if (attempt < PROPAGATION_ATTEMPTS) {
+      await new Promise((resolve) => setTimeout(resolve, PROPAGATION_DELAY_MS));
+    }
+  }
+  assert.fail("deployed Worker did not advertise quota headers before the propagation timeout");
+}
+
 try {
   const missing = await post(undefined, 1, "initialize", initializeParams());
   assert.equal(missing.status, 401, `missing key returned ${missing.status}`);
@@ -61,14 +77,21 @@ try {
 
   const issued = makeKey();
   const user = await pool.query(
-    "INSERT INTO users (name, tier, credit_limit) VALUES ($1, 'quota-test', 2) RETURNING id",
-    [testName]
+    "INSERT INTO users (name, tier, credit_limit) VALUES ($1, 'quota-test', $2) RETURNING id",
+    [testName, PROPAGATION_LIMIT]
   );
   userId = user.rows[0].id;
   const key = await pool.query(
     "INSERT INTO api_keys (user_id, key_hash) VALUES ($1, $2) RETURNING id",
     [userId, issued.hash]
   );
+
+  // A successful Wrangler deploy can take a few seconds to reach every edge.
+  // Wait for a response feature introduced by the deployed bundle before
+  // asserting the lifecycle, then discard readiness-check quota consumption.
+  await waitForDeployedQuotaHeaders(issued.token);
+  await pool.query("DELETE FROM api_quota_state WHERE user_id = $1", [userId]);
+  await pool.query("UPDATE users SET credit_limit = 2 WHERE id = $1", [userId]);
 
   const first = await post(issued.token, 3, "initialize", initializeParams());
   assert.equal(first.status, 200, `first allowed request returned ${first.status}`);
