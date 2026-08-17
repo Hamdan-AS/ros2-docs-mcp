@@ -12,7 +12,7 @@ const localBindingConfig = {
   observability: { enabled: true },
 };
 
-export default defineConfig(async () => {
+export default defineConfig(async ({ command }) => {
   // Keep Wrangler and Miniflare state project-local. These are non-secret tool
   // settings; application environment belongs in ignored `.env*` files.
   process.env.WRANGLER_WRITE_LOGS ??= "false";
@@ -30,7 +30,12 @@ export default defineConfig(async () => {
       vinext(),
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
-        config: localBindingConfig,
+        config: {
+          ...localBindingConfig,
+          // The bundled local Workers runtime currently tops out here. Keep
+          // the production build on the repository's newer compatibility date.
+          compatibility_date: command === "serve" ? "2026-05-22" : localBindingConfig.compatibility_date,
+        },
       }),
     ],
   };
