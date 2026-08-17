@@ -37,7 +37,7 @@
 - Deployed the production Worker at:
 
   ```text
-  https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp
+  https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp
   ```
 
 - Verified the live deployment:
@@ -78,8 +78,8 @@
 - Migrated the customer site from the undeployed GPT Sites project to a
   dedicated Cloudflare Worker and removed the Sites-specific build metadata.
 - Published and verified the customer site:
-  - Landing: `https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/`
-  - Privacy: `https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/privacy`
+  - Landing: `https://ros2-docs-mcp-site.notriful-beligum.workers.dev/`
+  - Privacy: `https://ros2-docs-mcp-site.notriful-beligum.workers.dev/privacy`
   - Both routes return `200 OK` and contain the expected rendered content.
   - Cloudflare site deployment run:
     `https://github.com/Hamdan-AS/ros2-docs-mcp/actions/runs/31896567228`

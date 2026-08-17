@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-const mcpUrl = new URL(process.env.MCP_URL ?? "https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp");
+const mcpUrl = new URL(process.env.MCP_URL ?? "https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp");
 const healthUrl = new URL("/health", mcpUrl);
 
 const health = await fetch(healthUrl, { signal: AbortSignal.timeout(15_000) });

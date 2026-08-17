@@ -2,7 +2,7 @@
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
 CREDIT_LIMIT=75
 # Comma-separated browser origins. Server-to-server MCP clients send no Origin.
-ALLOWED_ORIGINS=http://localhost:3000,https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev
+ALLOWED_ORIGINS=http://localhost:3000,https://ros2-docs-mcp-site.notriful-beligum.workers.dev
 TURNSTILE_SITE_KEY=replace-with-public-site-key
 TURNSTILE_SECRET_KEY=replace-with-secret-key
 TURNSTILE_HOSTNAME=localhost

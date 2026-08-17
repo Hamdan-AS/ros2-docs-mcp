@@ -18,9 +18,10 @@ const migrations = [
 ];
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const migrationsDir = path.resolve(scriptDir, "..", "..", "db", "migrations");
+const isLocal = databaseUrl.includes("localhost") || databaseUrl.includes("127.0.0.1");
 const pool = new pg.Pool({
   connectionString: databaseUrl,
-  ssl: { rejectUnauthorized: false },
+  ssl: isLocal ? false : { rejectUnauthorized: false },
   max: 1,
 });
 

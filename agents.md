@@ -50,7 +50,7 @@ ros2-docs-mcp/
 
 ## MCP endpoints
 - stdio: `npm start` (in server/) — deliberately unlimited, local dev.
-- Worker HTTP: `https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp`, requires
+- Worker HTTP: `https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp`, requires
   `Authorization: Bearer <key>` (401 without/invalid), per-user 75 credits; the
   final credit starts a 48-hour cooldown and subsequent requests return 429.
   `GET /health` is unauthenticated. Browser Origin headers must match the

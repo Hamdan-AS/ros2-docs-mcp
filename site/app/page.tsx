@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-const endpoint = "https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp";
+const endpoint = "https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp";
 const supportEmail = "qwerty_786@protonmail.com";
 
 export default async function Home() {
@@ -132,7 +132,7 @@ export default async function Home() {
         </div>
         <div className="statusBar">
           <div><span className="pulse" /><strong>Service status</strong><small>Live health endpoint</small></div>
-          <a href="https://ros2-docs-mcp.sidiquihamdan148.workers.dev/health">Check status ↗</a>
+          <a href="https://ros2-docs-mcp.notriful-beligum.workers.dev/health">Check status ↗</a>
         </div>
       </section>
 

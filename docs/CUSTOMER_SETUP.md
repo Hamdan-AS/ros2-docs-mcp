@@ -3,7 +3,7 @@
 Endpoint:
 
 ```text
-https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp
+https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp
 ```
 
 Each beta user receives an individual `r2d_...` key with 75 credits. Credits do
@@ -14,7 +14,7 @@ Never commit or post the key publicly.
 
 Public signup opens only after a production email domain is verified. After
 production enablement, open
-`https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/signup`, complete
+`https://ros2-docs-mcp-site.notriful-beligum.workers.dev/signup`, complete
 the Turnstile check, and verify the six-digit code emailed to you. The code is
 valid for 10 minutes. Three incorrect attempts pause verification for two hours;
 resends wait 60 seconds and are limited to three per two hours. A successful
@@ -38,7 +38,7 @@ your project:
   "mcpServers": {
     "ros2-docs": {
       "type": "http",
-      "url": "https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp",
+      "url": "https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp",
       "headers": {
         "Authorization": "Bearer ${ROS2_DOCS_MCP_API_KEY}"
       }
@@ -67,7 +67,7 @@ Run **MCP: Open User Configuration** and add:
   "servers": {
     "ros2-docs": {
       "type": "http",
-      "url": "https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp",
+      "url": "https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp",
       "headers": {
         "Authorization": "Bearer ${input:ros2-docs-key}"
       }
@@ -88,7 +88,7 @@ Inspector is supported for diagnostics:
 
 ```bash
 npx @modelcontextprotocol/inspector --cli \
-  https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp \
+  https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp \
   --transport http --method tools/list \
   --header "Authorization: Bearer $MCP_API_KEY"
 ```

@@ -12,7 +12,7 @@ request country without persisting location. An optional `SUPPORT_URL` is shown
 only when it is a valid HTTPS Patreon URL. Public signup remains closed while
 the MCP API reports disabled or operator-test mode.
 
-Production: `https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/`
+Production: `https://ros2-docs-mcp-site.notriful-beligum.workers.dev/`
 
 ## Prerequisites
 

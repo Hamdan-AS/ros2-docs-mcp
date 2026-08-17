@@ -8,15 +8,15 @@ and **Lyrical** and searches a Neon Postgres database; it never scrapes
 The public endpoint is:
 
 ```text
-https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp
+https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp
 ```
 
 Customer setup, beta access, service status, and the public privacy policy are
 published at:
 
 ```text
-https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/
-https://ros2-docs-mcp-site.sidiquihamdan148.workers.dev/privacy
+https://ros2-docs-mcp-site.notriful-beligum.workers.dev/
+https://ros2-docs-mcp-site.notriful-beligum.workers.dev/privacy
 ```
 
 The locally verified source also defines `/faq` and `/signup`; those routes are
@@ -111,7 +111,7 @@ connection is equivalent to:
 
 ```json
 {
-  "url": "https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp",
+  "url": "https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp",
   "headers": {
     "Authorization": "Bearer r2d_your_key_here"
   }

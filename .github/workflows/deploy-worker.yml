@@ -53,5 +53,5 @@ jobs:
         working-directory: server
         env:
           NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
-          MCP_URL: https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp
+          MCP_URL: https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp
         run: npm run test:lifecycle

@@ -14,11 +14,11 @@ jobs:
     steps:
       - name: Verify health endpoint
         run: |
-          body="$(curl --fail --silent --show-error https://ros2-docs-mcp.sidiquihamdan148.workers.dev/health)"
+          body="$(curl --fail --silent --show-error https://ros2-docs-mcp.notriful-beligum.workers.dev/health)"
           echo "$body" | grep -q '"status":"ok"'
       - name: Verify authentication gate
         run: |
           status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
             --request POST --header 'Content-Type: application/json' --data '{}' \
-            https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp)"
+            https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp)"
           test "$status" = "401"

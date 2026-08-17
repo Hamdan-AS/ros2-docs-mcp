@@ -3,7 +3,7 @@
 import Script from "next/script";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
-const apiOrigin = "https://ros2-docs-mcp.sidiquihamdan148.workers.dev";
+const apiOrigin = "https://ros2-docs-mcp.notriful-beligum.workers.dev";
 
 declare global {
   interface Window {

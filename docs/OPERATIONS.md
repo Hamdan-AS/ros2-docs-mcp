@@ -104,10 +104,10 @@ and optional `support_url`.
 ```bash
 cd server
 npm run smoke:public
-MCP_URL="https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp" \
+MCP_URL="https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp" \
 MCP_API_KEY="$CUSTOMER_KEY" npm run smoke:live
 NEON_DATABASE_URL="$NEON_DATABASE_URL" \
-MCP_URL="https://ros2-docs-mcp.sidiquihamdan148.workers.dev/mcp" \
+MCP_URL="https://ros2-docs-mcp.notriful-beligum.workers.dev/mcp" \
 npm run test:lifecycle
 ```
 
